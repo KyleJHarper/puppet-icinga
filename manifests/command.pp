@@ -2,7 +2,7 @@
 # Replacement for the internal nagios_command type
 #
 
-define nagios::nagios_command (
+define icinga::command (
   $commands,
   $target   = '/tmp/rawr.cfg',
   $ensure   = 'file',
