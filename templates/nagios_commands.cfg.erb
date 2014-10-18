@@ -1,0 +1,8 @@
+# THIS FILE IS CONTROLLED BY PUPPET
+<% commands.sort.map do |command_name, command_line| -%>
+
+define command {
+  command_name   <%= command_name %>
+  command_line   <%= command_line %>
+}
+<% end -%>
