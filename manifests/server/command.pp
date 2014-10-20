@@ -20,6 +20,6 @@ define icinga::command (
     owner   => $owner,
     group   => $group,
     mode    => $mode,
-    content => template('nagios/nagios_commands.cfg.erb');
+    content => template('icinga/commands.cfg.erb');
   }
 }

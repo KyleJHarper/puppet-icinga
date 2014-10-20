@@ -1,0 +1,6 @@
+<% if @name.match(/\s/) then ; fail("Command names cannot contain spaces.") ; end -%>
+#
+# THIS FILE IS MANAGED BY PUPPET
+#
+
+command[check_<%= @name %>]=<%= command_text %>

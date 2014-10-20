@@ -1,0 +1,1 @@
+<%= @effective_owner %> ALL=(ALL) NOPASSWD: <%= @nagios_primary_checks_directory %>/*<%= @nagios_custom_checks_directory == '' ? '' : ", #{nagios_custom_checks_directory}/*" %>
