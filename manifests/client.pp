@@ -1,11 +1,6 @@
 #
 # Container class for the client-side setup of Icinga, which is actually nagios and nrpe.
 #
-# icinga::client::packages:   Contains any and all packages required to make the nrpe service available on a host.
-# icinga::client::config:     Generates, or delegates to other classes to genereate, all required configuration for a host.
-# icinga::client::basechecks  Basic checks for all nodes to acquire when adding this module.
-# icinga::client::services:   Ensures the nrpe service, and any others required, are running.
-#
 
 class icinga::client (
   $ensure_file                     = $icinga::client::params::ensure_file,
