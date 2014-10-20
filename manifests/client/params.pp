@@ -26,7 +26,6 @@ class icinga::client::params () {
       $nrpe_config_file = '/etc/nagios/nrpe.cfg'
       $nrpe_config_directory = '/etc/nagios/nrpe.d'
       $nrpe_service = 'nagios-nrpe-server'
-      $use_sudo = true
       $sudoers_d_file = '/etc/sudoers.d/nagios'
     }
     default: {

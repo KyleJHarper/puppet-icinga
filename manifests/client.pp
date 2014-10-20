@@ -21,8 +21,7 @@ class icinga::client (
   $nrpe_config_directory           = $icinga::client::params::nrpe_config_directory,
   $nrpe_service                    = $icinga::client::params::nrpe_service,
   $nagios_primary_checks_directory = $icinga::client::params::nagios_primary_checks_directory,
-  $nagios_custom_checks_directory  = $icinga::client::params::nrpe_custom_checks_directory,
-  $use_sudo                        = $icinga::client::params::use_sudo,
+  $nagios_custom_checks_directory  = $icinga::client::params::nagios_custom_checks_directory,
   $sudoers_d_file                  = $icinga::client::params::sudoers_d_file,
 
 ) inherits icinga::client::params {

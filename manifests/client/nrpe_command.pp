@@ -12,14 +12,14 @@ define icinga::client::nrpe_command (
 
   # -- Write the config (cfg) file for the command
   file {
-    "${nrpe_config_directory}/${name}.cfg":
-    ensure  => file,
-    owner   => $effective_user,
-    group   => $effective_group,
+    "${icinga::client::nrpe_config_directory}/${name}.cfg":
+    ensure  => $icinga::client::ensure_file,
+    owner   => $icinga::client::effective_owner,
+    group   => $icinga::client::effective_group,
     mode    => '0644',
     content => template('icinga/etc/nagios/nrpe.d/command.cfg.erb'),
-    notify  => Service[$nrpe_service],
-    require => [ File[$nrpe_config_directory], Package[$nrpe_package] ];
+    notify  => Service[$icinga::client::nrpe_service],
+    require => [ File[$icinga::client::nrpe_config_directory], Package[$icinga::client::nrpe_package] ];
   }
 
 }

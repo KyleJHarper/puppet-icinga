@@ -7,14 +7,14 @@ class icinga::client::packages () {
 
   # Realize the packages
   package {
-    $extra_packages:
-    ensure => $ensure_package;
+    $icinga::client::extra_packages:
+    ensure => $icinga::client::ensure_package;
 
-    $plugin_packages:
-    ensure => $ensure_package;
+    $icinga::client::plugin_packages:
+    ensure => $icinga::client::ensure_package;
 
-    $nrpe_package:
-    ensure => $ensure_package;
+    $icinga::client::nrpe_package:
+    ensure => $icinga::client::ensure_package;
   }
 
 }
