@@ -13,6 +13,7 @@ class icinga::client::params () {
   $ensure_directory = 'directory'
   $ensure_package   = 'installed'
   $ensure_service   = 'running'
+  $ensure_host      = 'present'
 
   case $::operatingsystem {
     'Ubuntu': {
@@ -26,7 +27,11 @@ class icinga::client::params () {
       $nrpe_config_file = '/etc/nagios/nrpe.cfg'
       $nrpe_config_directory = '/etc/nagios/nrpe.d'
       $nrpe_service = 'nagios-nrpe-server'
+      $use_sudo = 'true'
       $sudoers_d_file = '/etc/sudoers.d/nagios'
+      $default_hostgroups = "${::lsbdistcodename}, ${::environment}, ${::virtual}, ${::domain}, ${::operatingsystem}, ${::osfamily}"
+      $host_template = 'generic-host'
+      $objects_directory = '/etc/icinga/objects'
     }
     default: {
       notify{

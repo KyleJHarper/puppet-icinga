@@ -9,7 +9,7 @@
 
 #@$opt_c  Specify the number of RX or TX errors before a critical is thrown.
 #@$opt_h  Show usage and quit.
-#@$opt_i  Interface to check.  Defaults to eth0.  Multiple should be space-separated.
+#@$opt_i  Interface to check.  Defaults to all matching '^[^ ]+' from ifconfig output (typically all interfaces).  Multiple should be space-separated.
 #@$opt_r  Specify the maximum bytes per second received before throwing a warning.  There is no critical value for this.
 #@$opt_t  Specify the maximum bytes per second transmitted before throwing a warning.  There is no critical value for this.
 #@$opt_w  Specify the number of RX or TX errors before a warning is thrown.
@@ -25,7 +25,7 @@ function usage {
   echo "    -h          Show this help and quit."
   echo "    -i 'ethX'   Space-separated list of interfaces to run checks on.  Make sure to quote them so they"
   echo "                arrive in the same positional e.g.:  'eth0 eth1 lo'"
-  echo "                Defaults to eth0."
+  echo "                Defaults to all interfaces matching '^[^ ]+' from ifconfig output (typically all interfaces)"
   echo "    -r      #   Number of RX bytes per second acceptable before throwing a warning.  There is no critical"
   echo "                counter-part to this check."
   echo "                Defaults to 5000000 (5 MB/s), ~half a 100Mbps link."
@@ -77,14 +77,15 @@ declare       bad_msg='ERROR.'                 #@$ Messages when things don't go
 declare    -i rv=${E_OK}                       #@$ Return value for all checks.
 
 # Get options and update post-option values.
-[ -f core.sh ] || fail "Cannot find core.sh (provided by the Stupid BashTard github project).  Aborting."
-source core.sh
+[ -f "$(dirname "${BASH_SOURCE[0]}")/core.sh" ] || fail "Cannot find core.sh (provided by the Stupid BashTard github project).  Aborting."
+source "$(dirname "${BASH_SOURCE[0]}")/core.sh"
 core_EasyGetOpts "${GETOPTS_SHORT}" '' "$@" || fail "Failed to get options.  Aborting."
-declare -r -a interfaces=(${option_i:-eth0})            #@$ The interfaces to test.
+declare    -a interfaces=(${option_i:-all})             #@$ The interfaces to test.
 declare -r -i ERROR_WARNING_THRESHOLD=${option_w:-1}    #@$ Number of errors between runs before throwing a warning.
 declare -r -i ERROR_CRITICAL_THRESHOLD=${option_c:-10}  #@$ Number of errors between runs before throwing a critical.
 declare -r -i RX_BPS_THRESHOLD=${option_r:-5000000}     #@$ Number of bytes per second received before throwing a warning.
 declare -r -i TX_BPS_THRESHOLD=${option_t:-5000000}     #@$ Number of bytes per second transmitted before throwing a warning.
+[ "${interfaces[*]}" = 'all' ] && interfaces=($(ifconfig -a | grep -oP '^[^ ]+' | awk '{printf("%s ", $1)}'))
 
 # Pre-flight checks
 # -- Show usage if they just want help

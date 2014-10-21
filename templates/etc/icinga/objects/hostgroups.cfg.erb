@@ -1,0 +1,4 @@
+<% all_hostgroups = '' -%>
+<% all_hostgroups +=        scope['icinga::client::default_hostgroups']            if !scope['icinga::client::default_hostgroups'].nil? -%>
+<% all_hostgroups += ', ' + scope['icinga::client::defined_hostgroups'].join(', ') if  scope['icinga::client::defined_hostgroups'].length > 0 -%>
+<%= all_hostgroups -%>

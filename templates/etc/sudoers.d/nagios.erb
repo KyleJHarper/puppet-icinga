@@ -1,1 +1,4 @@
-<%= @effective_owner %> ALL=(ALL) NOPASSWD: <%= @nagios_primary_checks_directory %>/*<%= @nagios_custom_checks_directory == '' ? '' : ", #{nagios_custom_checks_directory}/*" %>
+#
+# THIS FILE IS MANAGED BY PUPPET!  DO NOT EDIT DIRECTLY!!
+#
+<%= scope['icinga::client::effective_owner'] %> ALL=(ALL) NOPASSWD: <%= scope['icinga::client::nagios_primary_checks_directory'] %>/*<%= scope['icinga::client::nagios_custom_checks_directory'] == '' ? '' : ", " + scope['icinga::client::nagios_custom_checks_directory'] + "/*" %>

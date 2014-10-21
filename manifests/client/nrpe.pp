@@ -42,13 +42,15 @@ class icinga::client::nrpe () {
     recurse => true,
     purge   => false;
   }
-  #create_resources(icinga::client::nrpe_command, $commands)
+  create_resources(icinga::client::nrpe_command, $commands)
 
   # -- NRPE Requires sudo if not running as root and/or for certain checks.
   #    If sudo is provided by another system, user should simply set $use_sudo to false.
+  if ($icinga::client::use_sudo == 'true') and ($icinga::client::ensure_file =~ /(present|file)/){ $ensure_sudo_file = 'file'   }
+  else                                                                                           { $ensure_sudo_file = 'absent' }
   file {
     $icinga::client::sudoers_d_file:
-    ensure  => $icinga::client::ensure_file,
+    ensure  => $ensure_sudo_file,
     owner   => 'root',
     group   => 'root',
     mode    => '0440',
