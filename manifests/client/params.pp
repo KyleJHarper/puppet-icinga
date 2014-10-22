@@ -15,6 +15,14 @@ class icinga::client::params () {
   $ensure_service   = 'running'
   $ensure_host      = 'present'
 
+  # Patterns for allowed values when processing ensurable attributes.
+  $ensure_file_pattern         = 'file|present|absent'
+  $ensure_directory_pattern    = 'directory|absent'
+  $ensure_package_pattern      = 'present|installed|latest|absent|purged'
+  $ensure_service_pattern      = 'stopped|running'
+  $ensure_nagios_pattern       = 'present|absent'
+
+  # Main Selection Block
   case $::operatingsystem {
     'Ubuntu': {
       $effective_owner = 'nagios'
