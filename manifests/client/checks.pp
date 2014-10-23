@@ -1,13 +1,18 @@
 #
-# This class will perform a hiera_hash (merged lookup) for $checks.  This is so all checks can be setup
-# and modified through hiera, if desired.  Obviously, other classes can make their own icinga::client::service
-# calls to add checks.  For example, the 'apache2' module could call the aforementioned definition to force
-# all nodes using that module to include the check.  I personally thing hiera is better because it (should)
-# mirror your infrastructure's hierary.  However, with the above example you could also make all your modules
-# force the checks for all nodes which include them, which might be useful in some environments.
-# -- Power To The Admin
+# This is a wrapper class to allow me to avoid using an Anchor inside of client.pp.
+# This avoids an ugly anchor pattern and a dependency/ordering annoyance.
 #
+# If it wasn't clear, the purpose of this class is to load checks defined in hiera
+# rather than discovered inside of modules.  This allows you to ensure some basic
+# checks are applied to all nodes evenly, following the same infrastructure (hiera)
+# you're already using.
+#
+# Of course, other modules can call the icinga::client::service definition to include
+# module-specific checks which will all get exported irrespective of this class and vice
+# versa.
+#
+
 class icinga::client::checks () {
-  create_resources(icinga::client::service, $checks)
+  create_resources(icinga::client::service, $icinga::client::defined_checks)
 }
 

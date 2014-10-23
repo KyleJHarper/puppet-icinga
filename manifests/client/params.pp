@@ -9,11 +9,13 @@
 class icinga::client::params () {
 
   # Base ensure attributes to help with clean up if the user wants to purge icinga::client
-  $ensure_file      = 'file'
-  $ensure_directory = 'directory'
-  $ensure_package   = 'installed'
-  $ensure_service   = 'running'
-  $ensure_host      = 'present'
+  $ensure_file               = 'file'
+  $ensure_directory          = 'directory'
+  $ensure_package            = 'installed'
+  $ensure_service            = 'running'
+  $ensure_nagios_host        = 'present'
+  $ensure_nagios_hostextinfo = 'present'
+  $ensure_nagios_service     = 'present'
 
   # Patterns for allowed values when processing ensurable attributes.
   $ensure_file_pattern         = 'file|present|absent'
@@ -38,7 +40,6 @@ class icinga::client::params () {
       $use_sudo = 'true'
       $sudoers_d_file = '/etc/sudoers.d/nagios'
       $default_hostgroups = "${::lsbdistcodename}, ${::environment}, ${::virtual}, ${::domain}, ${::operatingsystem}, ${::osfamily}"
-      $host_template = 'generic-host'
       $objects_directory = '/etc/icinga/objects'
     }
     default: {

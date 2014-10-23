@@ -8,17 +8,14 @@ define icinga::client::service (
   $ensure = 'present',
 ) {
 
-  # Don't register the service if we're not interested in the node involved.  See common.yaml->icinga::exempt_servers.
-  if !member(hiera(icinga::exempt_servers), $::hostname) {
-    @@nagios_service { "${::hostname}_${name}":
-      ensure              => $icinga::client::ensure_service,
-      check_command       => $t_command,
-      host_name           => $::hostname,
-      servicegroups       => $t_group,
-      service_description => $name,
-      use                 => 'generic-service',
-      target              => "/etc/icinga/objects/${::hostname}_services.cfg";
-    }
+  @@nagios_service { "${::hostname}_${name}":
+    ensure              => $icinga::client::ensure_nagios_service,
+    check_command       => $command,
+    host_name           => $::hostname,
+    servicegroups       => $group,
+    service_description => $name,
+    use                 => $icinga::client::service_template,
+    target              => "${icinga::client::objects_directory}/${::hostname}_services.cfg";
   }
 
 }

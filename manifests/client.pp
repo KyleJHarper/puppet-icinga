@@ -23,7 +23,6 @@ class icinga::client (
   $sudoers_d_file                  = $icinga::client::params::sudoers_d_file,
   $use_sudo                        = $icinga::client::params::use_sudo,
   $default_hostgroups              = $icinga::client::params::default_hostgroups,
-  $host_template                   = $icinga::client::params::host_template,
   $objects_directory               = $icinga::client::params::objects_directory,
 
 ) inherits icinga::client::params {
@@ -32,14 +31,8 @@ class icinga::client (
   $defined_checks     = hiera_hash('icinga::client::defined_checks', {})
   $defined_hostgroups = hiera_array('icinga::client::defined_hostgroups', [])
 
-  # Sanity checks for failsauce.
-  if ($icinga::client::ensure_file                !~ /(file|present|absent)/)                    { fail("The ensure_file variable must be one of file|present|absent, not '${icinga::client::ensure_file}'.") }
-  if ($icinga::client::ensure_directory           !~ /(directory|absent)/)                       { fail("The ensure_directory variable must be one of directory|absent, not '${icinga::client::ensure_directory}'.") }
-  if ($icinga::client::ensure_package             !~ /(present|installed|latest|absent|purged)/) { fail("The ensure_package variable must be one of present|installed|latest|absent|purged, not '${icinga::client::ensure_package}'.") }
-  if ($icinga::client::ensure_service             !~ /(stopped|running)/)                        { fail("The ensure_service variable must be one of stopped|running, not '${icinga::client::ensure_service}'.") }
-  if ($icinga::client::ensure_nagios_host         !~ /(present|absent)/)                         { fail("The ensure_nagios_host variable must be one of present|absent, not '${icinga::client::ensure_host}'.") }
-  if ($icinga::client::ensure_nagios_hostextinfo  !~ /(present|absent)/)                         { fail("The ensure_nagios_hostextinfo variable must be one o
-  if ($icinga::client::ensure_nagios_service      !~ /(present|absent)/)                         { fail("The ensure_nagios_service variable must be one of present|absent, not '${icinga::client::ensure_service}'.") }
+  # Sanity checks for failsauce.  Template compilation failure will result in a fail() call for us.
+  $failsauce = template('icinga/failsauce.erb')
   validate_hash($defined_checks)
   validate_array($defined_hostgroups)
 
@@ -47,7 +40,7 @@ class icinga::client (
   Class['icinga::client']->
   class { 'icinga::client::packages': }->
   class { 'icinga::client::nrpe': }->
-  class { 'icinga::client::checks': }->
+#  class { 'icinga::client::checks': }->
   class { 'icinga::client::host': }
 #  icinga::client::hostextinfo { $::hostname: }
 
