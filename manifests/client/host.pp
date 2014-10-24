@@ -6,7 +6,7 @@
 # You may define special logic here or inside the template file to generate the hostgroups string.
 # Obvivously, any custom variables you make here need to be referenced in the template for them to get applied.
 #
-# Note:  I pull ensure_nagios_client from icinga::client so I can include it in the input validation I do within
+# Note:  I pull ensure_nagios_host from icinga::client so I can include it in the input validation I do within
 #        that class.  This means you can override this value in hiera at either level, which is fine. All other
 #        variables are specific to this nagios Type so it makes sense to put them here, not in the params pattern.
 #

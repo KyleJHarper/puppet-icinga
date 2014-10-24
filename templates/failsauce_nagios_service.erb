@@ -1,0 +1,84 @@
+<%
+  def zero_or_one(attribute, value)
+    if value != :undef and value !~ /[01]/ ; then fail("The attribute '#{attribute}' must be 0 o 1, not '#{value}'.") ; end
+  end
+
+  def one_of(attribute, value, allowed)
+    value == :undef and return
+    value =~ /[a-z](,[a-z])*/ or fail("The attribute '#{attribute}' must be a csv with no spaces, not '#{value}'.")
+    value.split(',').each do |letter|
+      allowed.include?(letter) or fail("The attribute '#{attribute}' does not allow the letter '#{letter}' found in value '#{value}'.")
+    end
+    if value.split(',').include?('n') and value.split(',').size > 1 ; then
+      fail("Specifying 'n' overrides other flags in the attribute '#{attribute}', you provided '#{value}'.  While it works, it's obnoxious.")
+    end
+  end
+
+  def is_a_float(attribute, value)
+    if value != :undef and value !~ /^(([0-9]+([.][0-9]+)?)|([.][0-9]+))$/ ; then
+      fail("The attribute '#{attribute}' must be an integer or float, not '#{value}'.")
+    end
+  end
+
+  def is_an_integer(attribute, value)
+    if value != :undef and value !~ /^[0-9]+$/ ; then
+      fail("The attribute '#{attribute}' must be an integer, not '#{value}'.")
+    end
+  end
+
+
+  # -- Actual checks.  Could be DRY'd up but it'll make the defs even more complex to read.
+  #
+  #                                                                       \|/ Alphabetical by attribute
+  ('active_checks_enabled',        scope['icinga::client::service::active_checks_enabled'])
+  ('check_freshness',              scope['icinga::client::service::check_freshness'])
+  ('check_interval',               scope['icinga::client::service::check_interval'])
+  ('event_handler_enabled',        scope['icinga::client::service::event_handler_enabled'])
+  ('failure_prediction_enabled',   scope['icinga::client::service::failure_prediction_enabled'])
+  ('first_notification_delay',     scope['icinga::client::service::first_notification_delay'])
+  ('flap_detection_enabled',       scope['icinga::client::service::flap_detection_enabled'])
+  ('flap_detection_options',       scope['icinga::client::service::flap_detection_options'])
+  ('freshness_threshold',          scope['icinga::client::service::freshness_threshold'])
+  ('high_flap_threshold',          scope['icinga::client::service::high_flap_threshold'])
+  ('initial_state',                scope['icinga::client::service::initial_state'])
+  ('is_volatile',                  scope['icinga::client::service::is_volatile'])
+  ('low_flap_threshold',           scope['icinga::client::service::low_flap_threshold'])
+  ('max_check_attempts',           scope['icinga::client::service::max_check_attempts'])
+  ('notification_interval',        scope['icinga::client::service::notification_interval'])
+  ('notification_options',         scope['icinga::client::service::notification_options'])
+  ('notifications_enabled',        scope['icinga::client::service::notifications_enabled'])
+  ('obsess_over_service',          scope['icinga::client::service::obsess_over_service'])
+  ('passive_checks_enabled',       scope['icinga::client::service::passive_checks_enabled'])
+  ('process_perf_data',            scope['icinga::client::service::process_perf_data'])
+  ('retain_nonstatus_information', scope['icinga::client::service::retain_nonstatus_information'])
+  ('retain_status_information',    scope['icinga::client::service::retain_status_information'])
+  ('retry_interval',               scope['icinga::client::service::retry_interval'])
+  ('service_description',          scope['icinga::client::service::service_description'])
+  ('servicegroups',                scope['icinga::client::service::servicegroups'])
+  ('stalking_options',             scope['icinga::client::service::stalking_options'])
+
+  zero_or_one('active_checks_enabled',        scope['icinga::client::host::active_checks_enabled'])
+  zero_or_one('check_freshness',              scope['icinga::client::host::check_freshness'])
+  is_a_float('check_interval',                scope['icinga::client::host::check_interval'])
+  zero_or_one('event_handler_enabled',        scope['icinga::client::host::event_handler_enabled'])
+  zero_or_one('failure_prediction_enabled',   scope['icinga::client::host::failure_prediction_enabled'])
+  is_a_float('first_notification_delay',      scope['icinga::client::host::first_notification_delay'])
+  zero_or_one('flap_detection_enabled',       scope['icinga::client::host::flap_detection_enabled'])
+  one_of('flap_detection_options',            scope['icinga::client::host::flap_detection_options'], ['d','o','n','u'])
+  is_an_integer('freshness_threshold',        scope['icinga::client::host::freshness_threshold'])
+  is_a_float('high_flap_threshold',           scope['icinga::client::host::high_flap_threshold'])
+  one_of('initial_state',                     scope['icinga::client::host::initial_state'], ['d','o','u'])
+  is_a_float('low_flap_threshold',            scope['icinga::client::host::low_flap_threshold'])
+  is_an_integer('max_check_attempts',         scope['icinga::client::host::max_check_attempts'])
+  is_a_float('notification_interval',         scope['icinga::client::host::notification_interval'])
+  one_of('notification_options',              scope['icinga::client::host::notification_options'], ['d','f','n','r','s','u'])
+  zero_or_one('notifications_enabled',        scope['icinga::client::host::notifications_enabled'])
+  zero_or_one('obsess_over_host',             scope['icinga::client::host::obsess_over_host'])
+  zero_or_one('passive_checks_enabled',       scope['icinga::client::host::passive_checks_enabled'])
+  zero_or_one('process_perf_data',            scope['icinga::client::host::process_perf_data'])
+  zero_or_one('retain_nonstatus_information', scope['icinga::client::host::retain_nonstatus_information'])
+  zero_or_one('retain_status_information',    scope['icinga::client::host::retain_status_information'])
+  is_a_float('retry_interval',                scope['icinga::client::host::retry_interval'])
+  one_of('stalking_options',                  scope['icinga::client::host::stalking_options'], ['d','n','o','u'])
+
+-%>

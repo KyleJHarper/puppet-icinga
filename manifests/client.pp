@@ -8,7 +8,6 @@ class icinga::client (
   $ensure_package                  = $icinga::client::params::ensure_package,
   $ensure_service                  = $icinga::client::params::ensure_service,
   $ensure_nagios_host              = $icinga::client::params::ensure_nagios_host,
-  $ensure_nagios_hostextinfo       = $icinga::client::params::ensure_nagios_hostextinfo,
   $ensure_nagios_service           = $icinga::client::params::ensure_nagios_service,
   $effective_owner                 = $icinga::client::params::effective_owner,
   $effective_group                 = $icinga::client::params::effective_group,
@@ -42,6 +41,8 @@ class icinga::client (
   class { 'icinga::client::nrpe': }->
 #  class { 'icinga::client::checks': }->
   class { 'icinga::client::host': }
-#  icinga::client::hostextinfo { $::hostname: }
+
+  # The following nagios types are deprecated and shouldn't be used.
+  # hostextinfo
 
 }

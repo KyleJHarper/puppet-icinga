@@ -14,7 +14,6 @@ class icinga::client::params () {
   $ensure_package            = 'installed'
   $ensure_service            = 'running'
   $ensure_nagios_host        = 'present'
-  $ensure_nagios_hostextinfo = 'present'
   $ensure_nagios_service     = 'present'
 
   # Patterns for allowed values when processing ensurable attributes.
