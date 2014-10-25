@@ -39,7 +39,7 @@ class icinga::client (
   Class['icinga::client']->
   class { 'icinga::client::packages': }->
   class { 'icinga::client::nrpe': }->
-#  class { 'icinga::client::checks': }->
+  class { 'icinga::client::checks': }->
   class { 'icinga::client::host': }
 
   # The following nagios types are deprecated and shouldn't be used.
