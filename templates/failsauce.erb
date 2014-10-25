@@ -9,7 +9,6 @@
   e_package            = scope['icinga::client::ensure_package']
   e_service            = scope['icinga::client::ensure_service']
   e_nagios_host        = scope['icinga::client::ensure_nagios_host']
-  e_nagios_hostextinfo = scope['icinga::client::ensure_nagios_hostextinfo']
   e_nagios_service     = scope['icinga::client::ensure_nagios_service']
 
 
@@ -20,7 +19,6 @@
   e_package            =~ /#{@ensure_package_pattern}/   || ruh_roh('ensure_package', @ensure_package_pattern, e_package)
   e_service            =~ /#{@ensure_service_pattern}/   || ruh_roh('ensure_service', @ensure_package_pattern, e_service)
   e_nagios_host        =~ /#{@ensure_nagios_pattern}/    || ruh_roh('ensure_nagios_host', @ensure_nagios_pattern, e_nagios_host)
-  e_nagios_hostextinfo =~ /#{@ensure_nagios_pattern}/    || ruh_roh('ensure_nagios_hostextinfo', @ensure_nagios_hostextinfo, e_nagios_hostextinfo)
   e_nagios_service     =~ /#{@ensure_nagios_pattern}/    || ruh_roh('ensure_nagios_service', @ensure_nagios_service, e_nagios_service)
 
 -%>
