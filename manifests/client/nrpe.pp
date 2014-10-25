@@ -48,7 +48,6 @@ class icinga::client::nrpe () {
     recurse => true,
     purge   => false;
   }
-  File <<| tag == 'icinga_client_external_check_registry |>>
 
   # -- NRPE Requires sudo if not running as root and/or for certain checks.
   #    If sudo is provided by another system, user should simply set $use_sudo to false.

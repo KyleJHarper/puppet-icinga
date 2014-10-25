@@ -52,17 +52,18 @@ define icinga::client::service (
   $retain_status_information    = undef,
   $retry_interval               = undef,
   $service_description          = $name,
-  $servicegroups                = $name,
+  $servicegroups                = $title,
   $stalking_options             = undef,
   $target                       = "${icinga::client::objects_directory}/${::hostname}_services.cfg",
   $use                          = 'generic-service',
 ) {
   # Call a template to perform validation in accordance with icinga docs (see link above).
   $failsauce_nagios_service = template('icinga/failsauce_nagios_service.erb')
+  $failsauce_servicegroups  = template('icinga/failsauce_servicegroups.erb')
 
   # Export the virtual host
   @@nagios_service {
-    "${::hostname}_${name}":
+    "${::hostname}_${title}":
     ensure                       => $icinga::client::service::ensure,
     action_url                   => $icinga::client::service::action_url,
     active_checks_enabled        => $icinga::client::service::active_checks_enabled,

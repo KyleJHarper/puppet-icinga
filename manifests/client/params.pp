@@ -23,6 +23,10 @@ class icinga::client::params () {
   $ensure_service_pattern      = 'stopped|running'
   $ensure_nagios_pattern       = 'present|absent'
 
+  # Information from the server component, which is otherwise inaccessible for client-only manifests.  Mostly for validation purposes.
+  $known_servicegroups = hiera_hash('icinga::server::servicegroups')
+  $known_hostgroups    = hiera_hash('icinga::server::hostgroups')
+
   # Main Selection Block
   case $::operatingsystem {
     'Ubuntu': {

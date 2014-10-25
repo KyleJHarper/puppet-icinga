@@ -33,8 +33,8 @@ class icinga::client (
 ) inherits icinga::client::params {
 
   # The following has to be done outside param.pp pattern, and outside data bindings above because we NEED hiera_hash.
-  $defined_checks     = hiera_hash('icinga::client::defined_checks', {})
-  $defined_hostgroups = hiera_array('icinga::client::defined_hostgroups', [])
+  $defined_checks        = hiera_hash('icinga::client::defined_checks', {})
+  $defined_hostgroups    = hiera_array('icinga::server::defined_hostgroups', [])
 
   # Sanity checks for failsauce.  Template compilation failure will result in a fail() call for us.
   $failsauce = template('icinga/failsauce.erb')

@@ -1,0 +1,15 @@
+<%
+# This will check all elements inside the @servicegroups variable which is provided by
+# the service{} definition call.  The idea is to simply ensure all the service groups
+# that a particular service wants to be in are *actually* defined on the master.
+
+if @servicegroups !~ /^(?:[^ ]+)(?:,[ ]*[^ ]+)*$/ then
+  fail("The servicegroups listed for " + @title + " must be a csv list, not '" + @servicegroups + "'.")
+end
+
+@servicegroups.split(',').each do |my_group|
+  if !@known_servicegroups.keys.include?(my_group.strip) then
+    fail("The service '#{title}' is attempting to specify the service group '#{my_group.strip}' which does not exist in the list of known groups in icinga::server::servicegroups.  Known service groups include: #{@known_servicegroups.keys.sort.join('|')}.  Please re-check your service definition or add the missing service group to your configuration store (i.e. hiera).")
+  end
+end
+-%>

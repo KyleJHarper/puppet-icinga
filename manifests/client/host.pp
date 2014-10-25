@@ -37,7 +37,7 @@ class icinga::client::host (
   $freshness_threshold          = undef,
   $high_flap_threshold          = undef,
   $host_name                    = undef,
-  $hostgroups                   = template('icinga/etc/icinga/objects/hostgroups.cfg.erb'),
+  $hostgroups                   = template('icinga/hostgroups.erb'),
   $icon_image                   = undef,
   $icon_image_alt               = undef,
   $initial_state                = undef,
@@ -63,10 +63,11 @@ class icinga::client::host (
 ){
   # Call a template to perform validation in accordance with icinga docs (see link above).
   $failsauce_nagios_host = template('icinga/failsauce_nagios_host.erb')
+  $failsauce_hostgroups  = template('icinga/failsauce_hostgroups.erb')
 
   # Export the virtual host
   @@nagios_host {
-    $name:
+    $::hostname:
     ensure                       => $icinga::client::host::ensure_nagios_host,
     action_url                   => $icinga::client::host::action_url,
     active_checks_enabled        => $icinga::client::host::active_checks_enabled,

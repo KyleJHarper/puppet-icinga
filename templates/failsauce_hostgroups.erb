@@ -1,0 +1,15 @@
+<%
+# This will check all elements inside the @hostgroups variable which is provided by
+# the host{} class call.  The idea is to simply ensure all the host groups that a
+# particular host wants to be in are *actually* defined on the master.
+
+if @hostgroups !~ /^(?:[^ ]+)(?:,[ ]*[^ ]+)*$/ then
+  fail("The hostgroups listed for " + @title + " must be a csv list, not '" + @hostgroups + "'.")
+end
+
+@hostgroups.split(',').each do |my_group|
+  if !@known_hostgroups.keys.include?(my_group.strip) then
+    fail("The host group '#{my_group.strip}' does not exist in the list of known groups in icinga::server::hostgroups.  Known host groups include: #{@known_hostgroups.keys.sort.join('|')}.  Please re-check your host's hostgroups list or add the missing host group to your configuration store (i.e. hiera).")
+  end
+end
+-%>

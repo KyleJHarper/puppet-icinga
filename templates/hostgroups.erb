@@ -1,3 +1,4 @@
+<%# This is used to build the hostgroup string for a client.  It does NOT collect or build anything for the .cfg file on the master Icinga server. -%>
 <% all_hostgroups = '' -%>
 <% all_hostgroups +=        scope['icinga::client::default_hostgroups']            if !scope['icinga::client::default_hostgroups'].nil? -%>
 <% all_hostgroups += ', ' + scope['icinga::client::defined_hostgroups'].join(', ') if  scope['icinga::client::defined_hostgroups'].length > 0 -%>

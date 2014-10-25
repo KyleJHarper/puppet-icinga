@@ -29,7 +29,7 @@
 
   def not_blank(attribute, value)
     if value.nil? then
-      fail("The attribute '#{attribute}' cannot be blank, nil, or undef. Grr: '#{value}'")
+      fail("The attribute '#{attribute}' cannot be blank, nil, or undef.")
     end
   end
 
@@ -46,6 +46,7 @@
   one_of('flap_detection_options',            @flap_detection_options, ['d','o','n','u'])
   is_an_integer('freshness_threshold',        @freshness_threshold)
   is_a_float('high_flap_threshold',           @high_flap_threshold)
+  not_blank('hostgroups',                     @hostgroups)
   one_of('initial_state',                     @initial_state, ['d','o','u'])
   is_a_float('low_flap_threshold',            @low_flap_threshold)
   is_an_integer('max_check_attempts',         @max_check_attempts)
