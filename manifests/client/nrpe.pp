@@ -15,7 +15,7 @@ class icinga::client::nrpe () {
     mode  => '0644',
   }
 
-  # -- Configuration files
+  # -- Basic NRPE Configuration files
   file {
     $icinga::client::nrpe_config_file:
     ensure  => $icinga::client::ensure_file,
@@ -25,9 +25,14 @@ class icinga::client::nrpe () {
 
     $icinga::client::nrpe_config_directory:
     ensure  => $icinga::client::ensure_directory,
+    force   => true,
     purge   => true,
     recurse => true;
+  }
+  create_resources(icinga::client::nrpe_command, $commands)
 
+  # -- Nagios Checks Files (Programs and Scripts)
+  file {
     $icinga::client::nagios_custom_checks_directory:
     ensure  => $icinga::client::ensure_directory,
     force   => true,
@@ -39,10 +44,11 @@ class icinga::client::nrpe () {
     $icinga::client::nagios_primary_checks_directory:
     ensure  => $icinga::client::ensure_directory,
     mode    => '0755',
+    force   => true,
     recurse => true,
     purge   => false;
   }
-  create_resources(icinga::client::nrpe_command, $commands)
+  File <<| tag == 'icinga_client_external_check_registry |>>
 
   # -- NRPE Requires sudo if not running as root and/or for certain checks.
   #    If sudo is provided by another system, user should simply set $use_sudo to false.

@@ -1,6 +1,13 @@
 #
 # Container class for the client-side setup of Icinga, which is actually nagios and nrpe.
 #
+# It helps tremendously to remember that there are only two (2) Types that need to be called
+# from the 'client' in a Nagios setup:  host and services.
+# Everything else is information the server keeps track of.  It would be nice to have the
+# client classes (i.e. this) read in the server values, such as servicegroups, to help do
+# more validation; but it's not.  Furthermore, Icinga has good debugging and failures are
+# logged and easy to trace from those logs.
+#
 
 class icinga::client (
   $ensure_file                     = $icinga::client::params::ensure_file,
@@ -23,7 +30,6 @@ class icinga::client (
   $use_sudo                        = $icinga::client::params::use_sudo,
   $default_hostgroups              = $icinga::client::params::default_hostgroups,
   $objects_directory               = $icinga::client::params::objects_directory,
-
 ) inherits icinga::client::params {
 
   # The following has to be done outside param.pp pattern, and outside data bindings above because we NEED hiera_hash.
@@ -42,7 +48,7 @@ class icinga::client (
   class { 'icinga::client::checks': }->
   class { 'icinga::client::host': }
 
-  # The following nagios types are deprecated and shouldn't be used.
-  # hostextinfo
-
+  # The following nagios types *can* be used/exported, but are deprecated and shouldn't be used.
+  # hostextinfo     => http://docs.icinga.org/latest/en/objectdefinitions.html#hostextinfo
+  # serviceextinfo  => http://docs.icinga.org/latest/en/objectdefinitions.html#serviceextinfo
 }
