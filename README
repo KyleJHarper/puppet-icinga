@@ -1,0 +1,4 @@
+Installs the icinga client (Nagios plugins and NRPE) on client nodes.
+
+Installs the icinga server software (Icinga, Icinga2) on master nodes.
+

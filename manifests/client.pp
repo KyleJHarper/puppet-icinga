@@ -10,14 +10,16 @@
 #
 
 class icinga::client (
-  $ensure_file                     = $icinga::client::params::ensure_file,
-  $ensure_directory                = $icinga::client::params::ensure_directory,
-  $ensure_package                  = $icinga::client::params::ensure_package,
-  $ensure_service                  = $icinga::client::params::ensure_service,
-  $ensure_nagios_host              = $icinga::client::params::ensure_nagios_host,
-  $ensure_nagios_service           = $icinga::client::params::ensure_nagios_service,
-  $effective_owner                 = $icinga::client::params::effective_owner,
-  $effective_group                 = $icinga::client::params::effective_group,
+  # -- These don't change between distributions; no use of params.
+  $ensure_file                     = 'file',
+  $ensure_directory                = 'directory',
+  $ensure_package                  = 'installed',
+  $ensure_service                  = 'running',
+  $ensure_nagios_host              = 'present',
+  $ensure_nagios_service           = 'present',
+  $effective_owner                 = 'nagios',
+  $effective_group                 = 'nagios',
+  # -- These are provided by params which change between distributions.
   $extra_packages                  = $icinga::client::params::extra_packages,
   $nrpe_package                    = $icinga::client::params::nrpe_package,
   $plugin_packages                 = $icinga::client::params::plugin_packages,
@@ -33,12 +35,14 @@ class icinga::client (
 ) inherits icinga::client::params {
 
   # The following has to be done outside param.pp pattern, and outside data bindings above because we NEED hiera_hash.
-  $defined_checks        = hiera_hash('icinga::client::defined_checks', {})
-  $defined_hostgroups    = hiera_array('icinga::server::defined_hostgroups', [])
+  $defined_checks      = hiera_hash('icinga::client::defined_checks', {})
+  $defined_hostgroups  = hiera_array('icinga::server::defined_hostgroups', [])
+  $known_servicegroups = hiera_hash('icinga::server::servicegroups')
+  $known_hostgroups    = hiera_hash('icinga::server::hostgroups')
 
   # Sanity checks for failsauce.  Template compilation failure will result in a fail() call for us.
   $failsauce = template('icinga/failsauce.erb')
-  validate_hash($defined_checks)
+  validate_hash($defined_checks, $known_servicegroups, $known_hostgroups)
   validate_array($defined_hostgroups)
 
   # Chain items for dependency management

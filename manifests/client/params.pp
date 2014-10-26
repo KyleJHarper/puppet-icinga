@@ -8,18 +8,10 @@
 
 class icinga::client::params () {
 
-  # Base ensure attributes to help with clean up if the user wants to purge icinga::client
-  $ensure_file               = 'file'
-  $ensure_directory          = 'directory'
-  $ensure_package            = 'installed'
-  $ensure_service            = 'running'
-  $ensure_nagios_host        = 'present'
-  $ensure_nagios_service     = 'present'
-
   # Patterns for allowed values when processing ensurable attributes.
   $ensure_file_pattern         = 'file|present|absent'
   $ensure_directory_pattern    = 'directory|absent'
-  $ensure_package_pattern      = 'present|installed|latest|absent|purged'
+  $ensure_package_pattern      = 'present|installed|latest|absent|purged|([0-9]+(\.[0-9]+)*)'
   $ensure_service_pattern      = 'stopped|running'
   $ensure_nagios_pattern       = 'present|absent'
 
@@ -30,8 +22,6 @@ class icinga::client::params () {
   # Main Selection Block
   case $::operatingsystem {
     'Ubuntu': {
-      $effective_owner = 'nagios'
-      $effective_group = 'nagios'
       $extra_packages = ['binutils']
       $nrpe_package = 'nagios-nrpe-server'
       $plugin_packages = ['nagios-plugins-basic', 'nagios-plugins-standard', 'libnagios-plugin-perl']
