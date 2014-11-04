@@ -1,0 +1,101 @@
+#!/bin/bash
+
+#
+# This will install the default databases if they don't already exist
+#   - icinga (idoutils)
+#   - icinga-web
+#
+
+# -- Functions
+function can_connect {
+  local -r db_name="${1}"
+  case "${DB_TYPE}" in
+    'postgres' ) psql -t -U "${DB_USERNAME}" -h "${DB_HOST}" -v ON_ERROR_STOP=1 "${db_name}" <<<"select 1;" >/dev/null || return 1 ;;
+    'mysql'    ) mysql   -u "${DB_USERNAME}" -h "${DB_HOST}" -p${DB_PASSWORD}   "${db_name}" <<<"select 1;" >/dev/null || return 1 ;;
+    *          ) echo "The DB type must be 'postgres' or 'mysql', not '${DB_TYPE}'." >&2                              ; exit 1   ;;
+  esac
+  return 0
+}
+
+function is_installed {
+  local -r db_name="${1}"
+  case "${db_name}" in
+    "${ICINGA_DB_NAME}"     ) local -r query='select count(*) from icinga_hostgroups;' ;;
+    "${ICINGA_WEB_DB_NAME}" ) local -r query='select count(*) from cronk;' ;;
+    *                       ) echo "DB name not recognized in is_installed function." ; exit 1 ;;
+  esac
+  case "${DB_TYPE}" in
+    'postgres' ) psql -t -U "${DB_USERNAME}" -h "${DB_HOST}" -v ON_ERROR_STOP=1 "${db_name}" <<<"${query}" >/dev/null || return 1 ;;
+    'mysql'    ) mysql   -u "${DB_USERNAME}" -h "${DB_HOST}" -p${DB_PASSWORD}   "${db_name}" <<<"${query}" >/dev/null || return 1 ;;
+    *          ) echo "The DB type must be 'postgres' or 'mysql', not '${DB_TYPE}'." >&2                             ; exit 1   ;;
+  esac
+  return 0
+}
+
+function install_dbs {
+  local    token='/does/not/exist'
+  local -r pgsql_core_file="$(find /usr -type f -name pgsql.sql | grep -F 'icinga-idoutils/examples')"
+  local -r mysql_core_file="$(find /usr -type f -name mysql.sql | grep -F 'icinga-idoutils/examples')"
+  local -r pgsql_web_file="$( find /usr -type f -name 'pgsql'   | grep -F 'icinga-web/install')"
+  local -r mysql_web_file="$( find /usr -type f -name 'mysql'   | grep -F 'icinga-web/install')"
+
+  if [ ! -f "${pgsql_core_file}" ] ; then echo "Cannot find the pgsql core DB installation file.  This is bad.  Aborting." >&2 ; return 1 ; fi
+  if [ ! -f "${mysql_core_file}" ] ; then echo "Cannot find the mysql core DB installation file.  This is bad.  Aborting." >&2 ; return 1 ; fi
+  if [ ! -f "${pgsql_web_file}" ]  ; then echo "Cannot find the pgsql web DB installation file.  This is bad.  Aborting."  >&2 ; return 1 ; fi
+  if [ ! -f "${mysql_web_file}" ]  ; then echo "Cannot find the mysql web DB installation file.  This is bad.  Aborting."  >&2 ; return 1 ; fi
+
+  if ! is_installed "${ICINGA_DB_NAME}" ; then
+    echo "Core Icinga database '${ICINGA_DB_NAME}' missing.  Attempting to install."
+    case "${DB_TYPE}" in
+      'postgres' ) createlang -U "${DB_USERNAME}" -h "${DB_HOST}" plpgsql            "${ICINGA_DB_NAME}"                       || return 1
+                   psql       -U "${DB_USERNAME}" -h "${DB_HOST}" -v ON_ERROR_STOP=1 "${ICINGA_DB_NAME}" <"${pgsql_core_file}" || return 1 ;;
+      'mysql'    ) mysql      -u "${DB_USERNAME}" -h "${DB_HOST}" -p${DB_PASSWORD}   "${ICINGA_DB_NAME}" <"${mysql_core_file}" || return 1 ;;
+      *          ) echo "The DB type must be 'postgres' or 'mysql', not '${DB_TYPE}'." >&2                                      ; exit 1   ;;
+    esac
+  fi
+
+  if ! is_installed "${ICINGA_WEB_DB_NAME}" ; then
+    echo "Icinga web database '${ICINGA_WEB_DB_NAME}' missing.  Attempting to install."
+    case "${DB_TYPE}" in
+      'postgres' ) createlang -U "${DB_USERNAME}" -h "${DB_HOST}" plpgsql            "${ICINGA_WEB_DB_NAME}"                      || return 1
+                   psql       -U "${DB_USERNAME}" -h "${DB_HOST}" -v ON_ERROR_STOP=1 "${ICINGA_WEB_DB_NAME}" <"${pgsql_web_file}" || return 1 ;;
+      'mysql'    ) mysql      -u "${DB_USERNAME}" -h "${DB_HOST}" -p${DB_PASSWORD}   "${ICINGA_WEB_DB_NAME}" <"${mysql_web_file}" || return 1 ;;
+      *          ) echo "The DB type must be 'postgres' or 'mysql', not '${DB_TYPE}'." >&2                                         ; exit 1   ;;
+    esac
+  fi
+
+  return 0
+}
+
+
+
+# -- Setup Variables
+declare -r    DB_TYPE="<%= @db_type %>"
+declare -r    DB_USERNAME="<%= @db_username %>"
+declare -r    DB_PASSWORD="<%= @db_password %>"
+declare -r -x PGPASSWORD="${DB_PASSWORD}"
+declare -r    DB_HOST="<%= @db_host %>"
+declare -r    ICINGA_DB_NAME="<%= @icinga_db_name %>"
+declare -r    ICINGA_WEB_DB_NAME="<%= @icinga_web_db_name %>"
+
+# -- Preflight Checks
+if ! which psql >/dev/null               ; then echo "Cannot find psql command.  Aborting."                            >&2 ; exit 1 ; fi
+if ! which createlang >/dev/null         ; then echo "Cannot find the createlang command.  Aborting."                  >&2 ; exit 1 ; fi
+if ! which mysql >/dev/null              ; then echo "Cannot find the mysql command.  Aborting."                       >&2 ; exit 1 ; fi
+if   grep -P '[ ]' <<<"${DB_PASSWORD}"   ; then echo "The DB password cannot contain a space.  Aborting."              >&2 ; exit 1 ; fi
+if   grep -P '[ ]' <<<"${DB_HOST}"       ; then echo "The DB host cannot contain a space.  Aborting."                  >&2 ; exit 1 ; fi
+if ! can_connect "${ICINGA_DB_NAME}"     ; then echo "Can't connect to the icinga (core) database: ${ICINGA_DB_NAME}"  >&2 ; exit 1 ; fi
+if ! can_connect "${ICINGA_WEB_DB_NAME}" ; then echo "Can't connect to the icinga web database: ${ICINGA_WEB_DB_NAME}" >&2 ; exit 1 ; fi
+
+# -- If we're just doing a check we just need to look for a known table and then leave.
+# The exec attribute:  unless => this_script.sh 'db_check'
+if [ "${1}" = 'db_check' ] ; then
+  is_installed "${ICINGA_DB_NAME}"     || exit 1
+  is_installed "${ICINGA_WEB_DB_NAME}" || exit 1
+  exit 0
+fi
+
+# -- If the checks passed and we are not doing the db_check, it's time to install the databases.
+if ! install_dbs ; then echo "Failed to install one or more of the databases." >&2 ; exit 1 ; fi
+
+exit 0

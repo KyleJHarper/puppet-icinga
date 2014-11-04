@@ -2,3 +2,8 @@ Installs the icinga client (Nagios plugins and NRPE) on client nodes.
 
 Installs the icinga server software (Icinga, Icinga2) on master nodes.
 
+Class icinga::server is intended to be installed a single server.  If you want to include
+apt and apache elsewhere in the manifest, you will need to comment them out of server.pp
+to avoid duplicate resource definitions.  It also assumes you will NOT run mysql/postgres
+on the master.  You can if you want, but this module doesn't include that.
+

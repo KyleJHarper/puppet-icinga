@@ -15,6 +15,10 @@ class icinga::server (
   $effective_group            = 'icinga',
   $purged_resources           = ['nagios_command', 'nagios_contact', 'nagios_contactgroup', 'nagios_host', 'nagios_hostgroup', 'nagios_service', 'nagios_servicegroup'],
   # -- These are provided by params which change between distributions.
+  $icinga_package             = $icinga::server::params::icinga_package,
+  $icinga_web_package         = $icinga::server::params::icinga_web_package,
+  $support_packages           = $icinga::server::params::support_packages,
+  $web_support_packages       = $icinga::server::params::web_support_packages,
   $objects_directory          = $icinga::server::params::objects_directory,
 
 ) inherits icinga::server::params {
@@ -28,7 +32,10 @@ class icinga::server (
 
   # Chain dependencies here
   Class['server']->
-  class{'icinga::server::package_provider': }
+  class{'apache': purge_configs => false }->
+  class{'icinga::server::package_provider': }->
+  class{'icinga::server::packages': }->
+  class{'icinga::server::config': }
 
   # Use arrows to define the pattern of operations so we don't get race conditions.
   #class { 'icinga::server::ppa': }->
