@@ -59,6 +59,7 @@ class icinga::client::host (
   $stalking_options             = undef,
   $statusmap_image              = undef,
   $use                          = 'generic-host',
+  $tags                         = [],
   $target                       = "${icinga::client::objects_directory}/${::hostname}_host.cfg",
 ){
   # Call a template to perform validation in accordance with icinga docs (see link above).
@@ -111,6 +112,7 @@ class icinga::client::host (
     stalking_options             => $icinga::client::host::stalking_options,
     statusmap_image              => $icinga::client::host::statusmap_image,
     use                          => $icinga::client::host::use,
+    tag                          => $icinga::client::host::tags,
     target                       => $icinga::client::host::target,
   }
 }

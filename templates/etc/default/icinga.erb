@@ -1,0 +1,17 @@
+# /etc/default/icinga
+
+# location of the icinga configuration file
+ICINGACFG="<%= @icinga__ICINGACFG %>"
+
+# location of the CGI configuration file
+CGICFG="<%= @icinga__CGICFG %>"
+
+# nicelevel to run icinga daemon with
+NICENESS=<%= @icinga__NICENESS %>
+
+# start ido2db daemon (no/yes)
+IDO2DB=<%= @icinga__IDO2DB %>
+
+# if you use pam_tmpdir, you need to explicitly set TMPDIR:
+<%= '#' if @icinga__TMPDIR == '/tmp' %>TMPDIR=<%= @icinga__TMPDIR %>
+

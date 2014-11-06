@@ -1,20 +1,15 @@
 #
-# This class sets up several configuration files for the packages we've installed.
-#
-# This will also install the databases for idoutils and icinga-web if they aren't found.
-#   1. The primary icinga (idoutils) DB
-#   2. The icinga-web database
-#   3. The inGraph database is installed by the setup script in another class
+# Configures IDO settings for the primary Icinga (core) database and IDO2DB service.
 #
 
-class icinga::server::config (
-  $icinga_db_name,
-  $icinga_web_db_name,
-  $db_username,
-  $db_password,
-  $db_host,
-  $db_type                                 = 'postgres',
-  $db_port                                 = '5432',
+class icinga::server::config::ido (
+  $icinga_db_name                          = $icinga::server::config::icinga_db_name,
+  $icinga_web_db_name                      = $icinga::server::config::icinga_web_db_name,
+  $db_username                             = $icinga::server::config::db_username,
+  $db_password                             = $icinga::server::config::db_password,
+  $db_host                                 = $icinga::server::config::db_host,
+  $db_type                                 = $icinga::server::config::db_type,
+  $db_port                                 = $icinga::server::config::db_port,
   $ido__debug_file                         = '/var/log/icinga/ido2db.debug',
   $ido__debug_level                        = '0',
   $ido__debug_readable_timestamp           = '0',
@@ -41,23 +36,11 @@ class icinga::server::config (
   $ido__tcp_port                           = '5668',
   $ido__trim_db_interval                   = '3600',
   $ido__use_ssl                            = '0',
-  $icinga__ICINGACFG                       = '/etc/icinga/icinga.cfg',
-  $icinga__CGICFG                          = '/etc/icinga/cgi.cfg',
-  $icinga__NICENESS                        = '5',
-  $icinga__IDO2DB                          = 'yes',
-  $icinga__TMPDIR                          = '/tmp',
-
 ){
-
-  File {
-    owner => $icinga::server::effective_owner,
-    group => $icinga::server::effective_group,
-    mode  => '0644',
-  }
 
   file {
     '/usr/local/bin/install_icinga_databases.sh':
-    ensure  => $icinga::server::ensure_file,
+    ensure  => file,
     owner   => 'root',
     group   => 'root',
     mode    => '0700',
@@ -65,19 +48,22 @@ class icinga::server::config (
     content => template('icinga/usr/local/bin/install_icinga_databases.sh.erb');
 
     '/etc/icinga/ido2db.cfg':
-    ensure  => $icinga::server::ensure_file,
+    ensure  => file,
+    owner   => $icinga::server::effective_owner,
+    group   => $icinga::server::effective_group,
     mode    => '0600',
     content => template('icinga/etc/icinga/ido2db.cfg.erb'),
     notify  => Exec['Reload-ido2db'];
 
     '/etc/default/icinga':
-    ensure  => $icinga::server::ensure_file,
-    content => template('icinga/etc/default/icinga.erb'),
-    notify  => Exec['Reload-icinga', 'Reload-ido2db'];
+    ensure  => file,
+    source  => 'puppet:///modules/icinga/etc/default/icinga',
+    notify  => [ Exec['Reload-icinga'] , Exec['Reload-ido2db'] ];
 
     '/etc/icinga/icinga.cfg':
-    ensure  => $icinga::server::ensure_file,
-    source  => template('icinga/etc/icinga/icinga.cfg.erb'),
+    ensure  => file,
+    mode    => '0644',
+    source  => 'puppet:///modules/icinga/etc/icinga/icinga.cfg',
     before  => File['/etc/default/icinga'],
     notify  => Exec['Reload-icinga'];
 

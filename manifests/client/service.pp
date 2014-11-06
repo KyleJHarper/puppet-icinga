@@ -54,6 +54,7 @@ define icinga::client::service (
   $service_description          = $name,
   $servicegroups                = $title,
   $stalking_options             = undef,
+  $tags                         = [],
   $target                       = "${icinga::client::objects_directory}/${::hostname}_services.cfg",
   $use                          = 'generic-service',
 ) {
@@ -105,6 +106,7 @@ define icinga::client::service (
     service_description          => $icinga::client::service::service_description,
     servicegroups                => $icinga::client::service::servicegroups,
     stalking_options             => $icinga::client::service::stalking_options,
+    tag                          => $icinga::client::service::tags,
     target                       => $icinga::client::service::target,
     use                          => $icinga::client::service::use,
   }

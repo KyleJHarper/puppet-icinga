@@ -36,6 +36,8 @@ class icinga::server (
   class{'icinga::server::package_provider': }->
   class{'icinga::server::packages': }->
   class{'icinga::server::config': }
+#  class{'icinga::server::ingraph': }
+
 
   # Use arrows to define the pattern of operations so we don't get race conditions.
   #class { 'icinga::server::ppa': }->
