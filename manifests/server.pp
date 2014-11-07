@@ -4,6 +4,11 @@
 
 class icinga::server (
   # -- These don't change between distributions; no use of params.
+  $icinga_db_name,
+  $icinga_web_db_name,
+  $db_username,
+  $db_password,
+  $db_host,
   $ensure_file                = 'file',
   $ensure_directory           = 'directory',
   $ensure_package             = 'installed',
@@ -20,6 +25,12 @@ class icinga::server (
   $support_packages           = $icinga::server::params::support_packages,
   $web_support_packages       = $icinga::server::params::web_support_packages,
   $objects_directory          = $icinga::server::params::objects_directory,
+  $icinga_service             = $icinga::server::params::icinga_service,
+  $ido2db_service             = $icinga::server::params::ido2db_service,
+  $ingraphd_service           = $icinga::server::params::ingraphd_service,
+  $ingraph_collector_service  = $icinga::server::params::ingraph_collector_service,
+  $db_type                    = 'postgres',
+  $db_port                    = '5432',
 
 ) inherits icinga::server::params {
 
