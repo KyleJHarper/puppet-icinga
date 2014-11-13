@@ -16,11 +16,11 @@
 
 # -- OBJECT CONFIGURATION FILE(S)
 # These are the object configuration files in which you define hosts, host groups, contacts, contact groups, services, etc.  Hint: Check the docs/wiki on how to monitor remote hosts with different transport methods and plugins.  Debian uses by default a configuration directory where icinga-common, other packages and the local admin can dump or link configuration files into.  Also, definitions for broker modules like idoutils.cfg.
-<%= @cfg_files.each do |cfg_file| -%>
-<%= '#' if @cfg_file == '' %>cfg_file=<%= @cfg_file %>
+<% @cfg_files.each do |cfg_file| -%>
+<%= '#' if @cfg_file == '' %>cfg_file=<%= cfg_file %>
 <% end -%>
-<%= @cfg_dirs.each do |cfg_dir| -%>
-<%= '#' if @cfg_dir == '' %>cfg_dir=<%= @cfg_dir %>
+<% @cfg_dirs.each do |cfg_dir| -%>
+<%= '#' if @cfg_dir == '' %>cfg_dir=<%= cfg_dir %>
 <% end -%>
 
 
@@ -193,8 +193,8 @@
 
 # -- GLOBAL HOST AND SERVICE EVENT HANDLERS
 # These options allow you to specify a host and service event handler command that is to be run for every host or service state change. The global event handler is executed immediately prior to the event handler that you have optionally specified in each host or service definition. The command argument is the short name of a command definition that you define in your host configuration file. Read the HTML docs for more information.
-<%= '#' if @#global_host_event_handler == '' %>#global_host_event_handler=<%= @global_host_event_handler %>
-<%= '#' if @#global_service_event_handler == '' %>#global_service_event_handler=<%= @global_service_event_handler %>
+<%= '#' if @global_host_event_handler == '' %>global_host_event_handler=<%= @global_host_event_handler %>
+<%= '#' if @global_service_event_handler == '' %>global_service_event_handler=<%= @global_service_event_handler %>
 
 
 # -- SERVICE INTER-CHECK DELAY METHOD
@@ -261,7 +261,7 @@
 # This experimental option allows you to set the max number of items the checkresult reaper will put onto the checkresult list for further processing by the core. If there are too many, the reaping will be terminated early, allowing the core to process the results sooner. On larger setups, that list might grow too much, and decrease performance on processing. You might experiment with that value, the inner core default is set to 0, disabling that feature.
 # Values:       0 = Disable max check result list items
 #          number = set max check result list items
-<%= '#' if @#max_check_result_list_items == '' %>#max_check_result_list_items=<%= @max_check_result_list_items %>
+<%= '#' if @max_check_result_list_items == '' %>max_check_result_list_items=<%= @max_check_result_list_items %>
 
 
 # -- CACHED HOST CHECK HORIZON
@@ -297,7 +297,7 @@
 
 # -- TIME CHANGE ADJUSTMENT THRESHOLDS
 # These options determine when Icinga will react to detected changes in system time (forward into the future).
-<%= '#' if @#time_change_threshold == '' %>#time_change_threshold=<%= @time_change_threshold %>
+<%= '#' if @time_change_threshold == '' %>time_change_threshold=<%= @time_change_threshold %>
 
 
 # -- AUTO-RESCHEDULING OPTION
@@ -348,7 +348,7 @@
 #    * comments:  hostname, servicename, author, comment
 #
 # If this variable is set, then on Icinga startup, the sync file will be read after the retention file has been processed. If the file is read successfully, it will be removed. If the file does not exist, no error will appear. There is also an API that will force a read of the sync file.
-<%= '#' if @#sync_retention_file == '' %>#sync_retention_file=<%= @sync_retention_file %>
+<%= '#' if @sync_retention_file == '' %>sync_retention_file=<%= @sync_retention_file %>
 
 
 # -- RETENTION DATA UPDATE INTERVAL
@@ -439,7 +439,7 @@
 # This option allows you to enable state based escalation ranges which will allow a more detailed granularity on when an escalation notification may happen, adding a filter based on the current host or service state when checking the escalation for notification viability. This is a behavioural change to the default, and therefore intentionally disabled. Enable at your own risk, as this remains an experimental feature.
 # Values:  1 = enable state based escalation ranges
 #          0 = disable state based escalation ranges
-<%= '#' if @#enable_state_based_escalation_ranges == '' %>#enable_state_based_escalation_ranges=<%= @enable_state_based_escalation_ranges %>
+<%= '#' if @enable_state_based_escalation_ranges == '' %>enable_state_based_escalation_ranges=<%= @enable_state_based_escalation_ranges %>
 
 
 # -- PROCESS PERFORMANCE DATA OPTION
@@ -451,8 +451,8 @@
 
 # -- HOST AND SERVICE PERFORMANCE DATA PROCESSING COMMANDS
 # These commands are run after every host and service check is performed.  These commands are executed only if the process_performance_data option (above) is set to 1.  The command argument is the short name of a command definition that you define in your host configuration file.  Read the HTML docs for more information on performance data.
-<%= '#' if @#host_perfdata_command == '' %>#host_perfdata_command=<%= @host_perfdata_command %>
-<%= '#' if @#service_perfdata_command == '' %>#service_perfdata_command=<%= @service_perfdata_command %>
+<%= '#' if @host_perfdata_command == '' %>host_perfdata_command=<%= @host_perfdata_command %>
+<%= '#' if @service_perfdata_command == '' %>service_perfdata_command=<%= @service_perfdata_command %>
 
 
 
@@ -490,13 +490,13 @@
 # THese options determine wether the core will process empty perfdata results or not. This is needed for distributed monitoring, and intentionally turned on by default. If you don't require empty perfdata - saving some cpu cycles on unwanted macro calculation - you can turn that off. Be careful!
 # Values:  1 = enable
 #          0 = disable
-<%= '#' if @#host_perfdata_process_empty_results == '' %>#host_perfdata_process_empty_results=<%= @host_perfdata_process_empty_results %>
-<%= '#' if @#service_perfdata_process_empty_results == '' %>#service_perfdata_process_empty_results=<%= @service_perfdata_process_empty_results %>
+<%= '#' if @host_perfdata_process_empty_results == '' %>host_perfdata_process_empty_results=<%= @host_perfdata_process_empty_results %>
+<%= '#' if @service_perfdata_process_empty_results == '' %>service_perfdata_process_empty_results=<%= @service_perfdata_process_empty_results %>
 
 
 # -- ALLOW EMPTY HOSTGROUP ASSIGMENT FOR SERVICES
 # This boolean option determines whether services assigned to empty host groups (host groups with no host members) will cause Icinga to exit with error on start up (or during a configuration check) or not. It's useful to be able to assign services to empty hostgroups when configuration files or pre-cached object files are distributed to various pollers, or when the process of generating Icinga config is automated, or when a set of services is slowly being phased out but should be kept around. The default behavior if the option is not present in the main configuration file is for Icinga to exit with error if services are associated with host groups that have no hosts associated with them.
-<%= '#' if @#allow_empty_hostgroup_assignment == '' %>#allow_empty_hostgroup_assignment=<%= @allow_empty_hostgroup_assignment %>
+<%= '#' if @allow_empty_hostgroup_assignment == '' %>allow_empty_hostgroup_assignment=<%= @allow_empty_hostgroup_assignment %>
 
 
 # -- OBSESS OVER SERVICE CHECKS OPTION
@@ -508,7 +508,7 @@
 
 # -- OBSESSIVE COMPULSIVE SERVICE PROCESSOR COMMAND
 # This is the command that is run for every service check that is processed by Icinga.  This command is executed only if the obsess_over_services option (above) is set to 1.  The command  argument is the short name of a command definition that you define in your host configuration file. Read the HTML docs for more information on implementing distributed monitoring.
-<%= '#' if @#ocsp_command == '' %>#ocsp_command=<%= @ocsp_command %>
+<%= '#' if @ocsp_command == '' %>ocsp_command=<%= @ocsp_command %>
 
 
 # -- OBSESS OVER HOST CHECKS OPTION
@@ -520,7 +520,7 @@
 
 # -- OBSESSIVE COMPULSIVE HOST PROCESSOR COMMAND
 # This is the command that is run for every host check that is processed by Icinga.  This command is executed only if the obsess_over_hosts option (above) is set to 1.  The command argument is the short name of a command definition that you define in your host configuration file. Read the HTML docs for more information on implementing distributed monitoring.
-<%= '#' if @#ochp_command == '' %>#ochp_command=<%= @ochp_command %>
+<%= '#' if @ochp_command == '' %>ochp_command=<%= @ochp_command %>
 
 
 # -- TRANSLATE PASSIVE HOST CHECKS OPTION
@@ -610,7 +610,7 @@
 
 # -- TIMEZONE OFFSET
 # This option is used to override the default timezone that this instance of Icinga runs in.  If not specified, Icinga will use the system configured timezone.  NOTE: In order to display the correct timezone in the CGIs, you will also need to alter the Apache directives for the CGI path to include your timezone.
-<%= '#' if @#use_timezone == '' %>#use_timezone=<%= @use_timezone %>
+<%= '#' if @use_timezone == '' %>use_timezone=<%= @use_timezone %>
 
 
 # -- P1.PL FILE LOCATION
@@ -715,14 +715,14 @@
 # This option determines whether or not Icinga will free memory in child processes (processed used to execute system commands and host/service checks).  If you specify a value here, it will override program defaults.
 # Value: 1 - Free memory in child processes
 #        0 - Do not free memory in child processes
-<%= '#' if @#free_child_process_memory == '' %>#free_child_process_memory=<%= @free_child_process_memory %>
+<%= '#' if @free_child_process_memory == '' %>free_child_process_memory=<%= @free_child_process_memory %>
 
 
 # -- CHILD PROCESS FORKING BEHAVIOR
 # This option determines how Icinga will fork child processes (used to execute system commands and host/service checks).  Normally child processes are fork()ed twice, which provides a very high level of isolation from problems.  Fork()ing once is probably enough and will save a great deal on CPU usage (in large installs), so you might want to consider using this.  If you specify a value here, it will program defaults.
 # Value: 1 - Child processes fork() twice
 #        0 - Child processes fork() just once
-<%= '#' if @#child_processes_fork_twice == '' %>#child_processes_fork_twice=<%= @child_processes_fork_twice %>
+<%= '#' if @child_processes_fork_twice == '' %>child_processes_fork_twice=<%= @child_processes_fork_twice %>
 
 
 # -- DEBUG LEVEL

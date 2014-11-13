@@ -1,14 +1,14 @@
 <%
   def zero_or_one(attribute, value)
     return if value.nil? or value == :undef
-    value !~ /[01]/ or fail("The attribute '#{attribute}' must be 0 o 1, not '#{value}'.")
+    value =~ /[01]/ or fail("The attribute '#{attribute}' must be 0 or 1, not '#{value}'.")
   end
 
-  def one_of(attribute, value, allowed)
+  def one_of(attribute, value, allowed, pattern = '[a-z](,[a-z])*')
     return if value.nil? or value == :undef
-    value =~ /[a-z](,[a-z])*/ or fail("The attribute '#{attribute}' must be a csv with no spaces, not '#{value}'.")
-    value.split(',').each do |letter|
-      allowed.include?(letter) or fail("The attribute '#{attribute}' does not allow the letter '#{letter}' found in value '#{value}'.")
+    value =~ /#{pattern}/ or fail("The attribute '#{attribute}' must be a csv matching pattern '#{pattern}', not '#{value}'.")
+    value.split(',').each do |token|
+      allowed.include?(token) or fail("The attribute '#{attribute}' does not allow the token '#{token}' found in value '#{value}'.")
     end
     if value.split(',').include?('n') and value.split(',').size > 1 ; then
       fail("Specifying 'n' overrides other flags in the attribute '#{attribute}', you provided '#{value}'.  While it works, it's obnoxious.")

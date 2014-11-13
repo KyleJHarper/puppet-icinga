@@ -1,0 +1,15 @@
+<%
+  def ruh_roh(ensure_variable, ensure_pattern, current_value)
+    fail "The #{ensure_variable} variable must be one of #{ensure_pattern}, not '#{current_value}'."
+  end
+
+  # This is intended to perform a bunch of sanity checking so it's cleaner.
+  @ensure_file           =~ /#{@ensure_file_pattern}/      || ruh_roh('ensure_file', @ensure_file_pattern, @ensure_file)
+  @ensure_directory      =~ /#{@ensure_directory_pattern}/ || ruh_roh('ensure_directory', @ensure_directory_pattern, @ensure_directory)
+  @ensure_package        =~ /#{@ensure_package_pattern}/   || ruh_roh('ensure_package', @ensure_package_pattern, @ensure_package)
+  @ensure_role           =~ /#{@ensure_role_pattern}/      || ruh_roh('ensure_role', @ensure_role_pattern, @ensure_role)
+  @ensure_service        =~ /#{@ensure_service_pattern}/   || ruh_roh('ensure_service', @ensure_package_pattern, @ensure_service)
+  @ensure_nagios_host    =~ /#{@ensure_nagios_pattern}/    || ruh_roh('ensure_nagios_host', @ensure_nagios_pattern, @ensure_nagios_host)
+  @ensure_nagios_service =~ /#{@ensure_nagios_pattern}/    || ruh_roh('ensure_nagios_service', @ensure_nagios_service, @ensure_nagios_service)
+
+-%>

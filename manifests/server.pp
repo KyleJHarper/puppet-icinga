@@ -9,11 +9,13 @@ class icinga::server (
   $db_username,
   $db_password,
   $db_host,
+  $db_type                    = 'postgres',
+  $db_port                    = '5432',
   $ensure_file                = 'file',
   $ensure_directory           = 'directory',
   $ensure_package             = 'installed',
   $ensure_service             = 'running',
-  $ensure_nagios_host         = 'present',
+  $ensure_role                = 'present',
   $ensure_nagios_hostgroup    = 'present',
   $ensure_nagios_servicegroup = 'present',
   $effective_owner            = 'icinga',
@@ -38,17 +40,20 @@ class icinga::server (
   $servicegroups = hiera_hash('icinga::server::servicegroups')
   $hostgroups    = hiera_hash('icinga::server::hostgroups')
 
-  # Validate
+  # Validation
   validate_hash($servicegroups, $hostgroups)
+  $optimus_failsauce_prime = template('icinga/failsauce_server_ensures.erb')
 
   # Chain dependencies here
   Class['server']->
   class{'apache': purge_configs => false }->
+  class{'icinga::server::roles': }->
   class{'icinga::server::package_provider': }->
   class{'icinga::server::packages': }->
+  class{'icinga::server::ido_config': }->
   class{'icinga::server::config': }
 #  class{'icinga::server::ingraph': }
-
+  class{'icinga::server::services': }
 
   # Use arrows to define the pattern of operations so we don't get race conditions.
   #class { 'icinga::server::ppa': }->

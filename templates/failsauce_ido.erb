@@ -1,0 +1,82 @@
+<%
+  def zero_or_one(attribute, value)
+    return if value.nil? or value == :undef
+    value =~ /[01]/ or fail("The attribute '#{attribute}' must be 0 or 1, not '#{value}'.")
+  end
+
+  def one_of(attribute, value, allowed, pattern = '[a-z](,[a-z])*')
+    return if value.nil? or value == :undef
+    value =~ /#{pattern}/ or fail("The attribute '#{attribute}' must be a csv matching pattern '#{pattern}', not '#{value}'.")
+    value.split(',').each do |token|
+      allowed.include?(token) or fail("The attribute '#{attribute}' does not allow the token '#{token}' found in value '#{value}'.")
+    end
+    if value.split(',').include?('n') and value.split(',').size > 1 ; then
+      fail("Specifying 'n' overrides other flags in the attribute '#{attribute}', you provided '#{value}'.  While it works, it's obnoxious.")
+    end
+  end
+
+  def is_a_float(attribute, value)
+    return if value.nil? or value == :undef
+    value !~ /^(([0-9]+([.][0-9]+)?)|([.][0-9]+))$/ or fail("The attribute '#{attribute}' must be an integer or float, not '#{value}'.")
+  end
+
+  def is_an_integer(attribute, value)
+    return if value.nil? or value == :undef
+    if value != :undef and value !~ /^[0-9]+$/ ; then
+      fail("The attribute '#{attribute}' must be an integer, not '#{value}'.")
+    end
+  end
+
+  def not_blank(attribute, value)
+    if value.nil? then
+      fail("The attribute '#{attribute}' cannot be blank, nil, or undef.")
+    end
+  end
+
+  # -- Actual checks.  Could be DRY'd up but it'll make the defs even more complex to read.
+  #
+  #                                                  \|/ Alphabetical by attribute
+  not_blank('buffer_file',                            @buffer_file)
+  is_an_integer('config_output_options',              @config_output_options)
+  one_of('config_output_options',                     @config_output_options, ['0','1','2','3'], '[0-9]')
+  is_an_integer('data_processing_options',            @data_processing_options)
+  not_blank('debug_file__ido2db',                     @debug_file__ido2db)
+  not_blank('debug_file__idomod',                     @debug_file__idomod)
+  is_an_integer('debug_level',                        @debug_level)
+  one_of('debug_level',                               @debug_level, ['-1','0','1','2'], '[-]?[0-9]')
+  is_an_integer('debug_readable_timestamp',           @debug_readable_timestamp)
+  zero_or_one('debug_readable_timestamp',             @debug_readable_timestamp)
+  is_an_integer('debug_verbosity',                    @debug_verbosity)
+  one_of('debug_verbosity',                           @debug_verbosity, ['0','1','2'], '[0-9]')
+  zero_or_one('dump_customvar_status',                @dump_customvar_status)
+  is_an_integer('housekeeping_thread_startup_delay',  @housekeeping_thread_startup_delay)
+  not_blank('instance_name',                          @instance_name)
+  not_blank('lock_file',                              @lock_file)
+  is_an_integer('max_acknowledgements_age',           @max_acknowledgements_age)
+  is_an_integer('max_contactnotificationmethods_age', @max_contactnotificationmethods_age)
+  is_an_integer('max_contactnotifications_age',       @max_contactnotifications_age)
+  is_an_integer('max_debug_file_size',                @max_debug_file_size)
+  is_an_integer('max_downtimehistory_age',            @max_downtimehistory_age)
+  is_an_integer('max_externalcommands_age',           @max_externalcommands_age)
+  is_an_integer('max_eventhandlers_age',              @max_eventhandlers_age)
+  is_an_integer('max_hostchecks_age',                 @max_hostchecks_age)
+  is_an_integer('max_logentries_age',                 @max_logentries_age)
+  is_an_integer('max_notifications_age',              @max_notifications_age)
+  is_an_integer('max_servicechecks_age',              @max_servicechecks_age)
+  is_an_integer('max_systemcommands_age',             @max_systemcommands_age)
+  zero_or_one('oci_errors_to_syslog',                 @oci_errors_to_syslog)
+  is_an_integer('oracle_trace_level',                 @oracle_trace_level)
+  one_of('oracle_trace_level',                        @oracle_trace_level, ['0','1','4','8','12'], '[0-9]{1,2}')
+  is_an_integer('output_buffer_items',                @output_buffer_items)
+  not_blank('output_type',                            @output_type)
+  not_blank('output',                                 @output)
+  is_an_integer('reconnect_interval',                 @reconnect_interval)
+  is_an_integer('reconnect_warning_interval',         @reconnect_warning_interval)
+  not_blank('socket_name',                            @socket_name)
+  not_blank('socket_perm',                            @socket_perm)
+  not_blank('socket_type',                            @socket_type)
+  is_an_integer('tcp_port',                           @tcp_port)
+  is_an_integer('trim_db_interval',                   @trim_db_interval)
+  zero_or_one('use_ssl',                              @use_ssl)
+
+-%>

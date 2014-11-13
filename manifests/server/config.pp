@@ -162,6 +162,8 @@ class icinga::server::config (
 
 ){
 
+  $failsauce_icinga = template('icinga/failsauce_icinga.erb')
+
   File {
     owner => $icinga::server::effective_owner,
     group => $icinga::server::effective_group,
@@ -174,7 +176,6 @@ class icinga::server::config (
     owner   => 'root',
     group   => 'root',
     mode    => '0700',
-    before  => Exec['Run-DB-Installer'],
     content => template('icinga/usr/local/bin/install_icinga_databases.sh.erb');
 
     '/etc/default/icinga':
@@ -184,29 +185,29 @@ class icinga::server::config (
 
     '/etc/icinga/icinga.cfg':
     ensure  => $icinga::server::ensure_file,
-    source  => template('icinga/etc/icinga/icinga.cfg.erb'),
+    content => template('icinga/etc/icinga/icinga.cfg.erb'),
     notify  => Service[$icinga::server::icinga_service];
 
-    '/etc/icinga/commands.cfg':
-    ensure  => file,
-    mode    => '0644',
-    source  => 'puppet:///modules/icinga/etc/icinga/commands.cfg',
-    notify  => Exec['Reload-icinga'];
-
-    '/etc/icinga/objects':
-    ensure  => directory,
-    recurse => true,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    source  => 'puppet:///modules/icinga/etc/icinga/objects';
+#    '/etc/icinga/commands.cfg':
+#    ensure  => file,
+#    mode    => '0644',
+#    source  => 'puppet:///modules/icinga/etc/icinga/commands.cfg',
+#    notify  => Service[$icinga::server::icinga_service];
+#
+#    '/etc/icinga/objects':
+#    ensure  => directory,
+#    recurse => true,
+#    owner   => 'root',
+#    group   => 'root',
+#    mode    => '0644',
+#    source  => 'puppet:///modules/icinga/etc/icinga/objects';
 
   }
 
   exec {
     'Run-DB-Installer':
-    command   => '/usr/local/bin/install_icinga_databases.sh',
-    unless    => '/usr/local/bin/install_icinga_databases.sh db_check';
+    command => '/usr/local/bin/install_icinga_databases.sh',
+    unless  => '/usr/local/bin/install_icinga_databases.sh db_check';
   }
 
 }

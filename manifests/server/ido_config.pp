@@ -3,11 +3,20 @@
 #
 
 class icinga::server::ido_config (
-  $debug_file                         = '/var/log/icinga/ido2db.debug',
+  $buffer_file                        = '/var/lib/icinga/idomod.tmp',
+  $config_output_options              = '2',
+  $data_processing_options            = '67108669',
+  $debug_file__ido2db                 = '/var/log/icinga/ido2db.debug',
+  $debug_file__idomod                 = '/var/log/icinga/idomod.debug',
   $debug_level                        = '0',
   $debug_readable_timestamp           = '0',
   $debug_verbosity                    = '2',
+  $dump_customvar_status              = '1',
+  $file_rotation_command              = '',
+  $file_rotation_interval             = '14400',
+  $file_rotation_timeout              = '60',
   $housekeeping_thread_startup_delay  = '300',
+  $instance_name                      = 'default',
   $lock_file                          = '/var/run/icinga/ido2db.pid',
   $max_acknowledgements_age           = '44640',
   $max_contactnotificationmethods_age = '44640',
@@ -23,6 +32,11 @@ class icinga::server::ido_config (
   $max_systemcommands_age             = '1440',
   $oci_errors_to_syslog               = '1',
   $oracle_trace_level                 = '0',
+  $output_buffer_items                = '5000',
+  $output_type                        = 'unixsocket',
+  $output                             = '/var/lib/icinga/ido.sock',
+  $reconnect_interval                 = '15',
+  $reconnect_warning_interval         = '15',
   $socket_name                        = '/var/lib/icinga/ido.sock',
   $socket_perm                        = '0755',
   $socket_type                        = 'unix',
@@ -32,20 +46,24 @@ class icinga::server::ido_config (
 
 ){
 
+  $ido_failsauce = template('icinga/failsauce_ido.erb')
+
   File {
     owner => $icinga::server::effective_owner,
     group => $icinga::server::effective_group,
-    mode  => '0644',
+    mode  => '0600',
   }
 
   file {
     '/etc/icinga/ido2db.cfg':
     ensure  => $icinga::server::ensure_file,
-    mode    => '0600',
     content => template('icinga/etc/icinga/ido2db.cfg.erb'),
     notify  => Service[$icinga::server::ido2db_service];
 
-    # Add idomod config file here
+    '/etc/icinga/idomod.cfg':
+    ensure  => $icinga::server::ensure_file,
+    content => template('icinga/etc/icinga/idomod.cfg.erb'),
+    notify  => Service[$icinga::server::icinga_service];
   }
 
 }

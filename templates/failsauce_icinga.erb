@@ -1,0 +1,236 @@
+<%
+  def zero_or_one(attribute, value)
+    return if value.nil? or value == :undef
+    value =~ /[01]/ or fail("The attribute '#{attribute}' must be 0 or 1, not '#{value}'.")
+  end
+
+  def one_of(attribute, value, allowed, pattern = '[a-z](,[a-z])*')
+    return if value.nil? or value == :undef
+    value =~ /#{pattern}/ or fail("The attribute '#{attribute}' must be a csv matching pattern '#{pattern}', not '#{value}'.")
+    value.split(',').each do |token|
+      allowed.include?(token) or fail("The attribute '#{attribute}' does not allow the token '#{token}' found in value '#{value}'.")
+    end
+    if value.split(',').include?('n') and value.split(',').size > 1 ; then
+      fail("Specifying 'n' overrides other flags in the attribute '#{attribute}', you provided '#{value}'.  While it works, it's obnoxious.")
+    end
+  end
+
+  def is_a_float(attribute, value)
+    return if value.nil? or value == :undef
+    value !~ /^(([0-9]+([.][0-9]+)?)|([.][0-9]+))$/ or fail("The attribute '#{attribute}' must be an integer or float, not '#{value}'.")
+  end
+
+  def is_an_integer(attribute, value)
+    return if value.nil? or value == :undef
+    if value != :undef and value !~ /^[0-9]+$/ ; then
+      fail("The attribute '#{attribute}' must be an integer, not '#{value}'.")
+    end
+  end
+
+  def not_blank(attribute, value)
+    if value.nil? then
+      fail("The attribute '#{attribute}' cannot be blank, nil, or undef.")
+    end
+  end
+
+  # -- Actual checks.  Could be DRY'd up but it'll make the defs even more complex to read.
+  #
+  #                                                  \|/ Alphabetical by attribute
+  ('ICINGACFG', @ICINGACFG)                                   = '/etc/icinga/icinga.cfg',
+  ('CGICFG', @CGICFG)                                      = '/etc/icinga/cgi.cfg',
+  ('NICENESS', @NICENESS)                                    = '5',
+  ('IDO2DB', @IDO2DB)                                      = 'yes',
+  ('TMPDIR', @TMPDIR)                                      = '/tmp',
+  ('accept_passive_host_checks', @accept_passive_host_checks)                  = '1',
+  ('accept_passive_service_checks', @accept_passive_service_checks)               = '1',
+  ('additional_freshness_latency', @additional_freshness_latency)                = '15',
+  ('admin_email', @admin_email)                                 = 'root@localhost',
+  ('admin_pager', @admin_pager)                                 = 'pageroot@localhost',
+  ('allow_empty_hostgroup_assignment', @allow_empty_hostgroup_assignment)            = '',
+  ('auto_reschedule_checks', @auto_reschedule_checks)                      = '0',
+  ('auto_rescheduling_interval', @auto_rescheduling_interval)                  = '30',
+  ('auto_rescheduling_window', @auto_rescheduling_window)                    = '180',
+  ('broker_module', @broker_module)                               = '/usr/lib/icinga/idomod.so config_file=/etc/icinga/idomod.cfg',
+  ('cached_host_check_horizon', @cached_host_check_horizon)                   = '15',
+  ('cached_service_check_horizon', @cached_service_check_horizon)                = '15',
+  ('cfg_dirs', @cfg_dirs)                                    = ['/etc/icinga/modules', '/etc/icinga/objects', '/etc/nagios-plugins/config'],
+  ('cfg_files', @cfg_files)                                   = '/etc/icinga/commands.cfg',
+  ('check_external_commands', @check_external_commands)                     = '1',
+  ('check_for_orphaned_hosts', @check_for_orphaned_hosts)                    = '1',
+  ('check_for_orphaned_services', @check_for_orphaned_services)                 = '1',
+  ('check_host_freshness', @check_host_freshness)                        = '0',
+  ('check_result_path', @check_result_path)                           = '/var/lib/icinga/spool/checkresults',
+  ('check_result_reaper_frequency', @check_result_reaper_frequency)               = '10',
+  ('check_service_freshness', @check_service_freshness)                     = '1',
+  ('child_processes_fork_twice', @child_processes_fork_twice)                  = '',
+  ('command_check_interval', @command_check_interval)                      = '-1',
+  ('command_file', @command_file)                                = '/var/lib/icinga/rw/icinga.cmd',
+  ('daemon_dumps_core', @daemon_dumps_core)                           = '0',
+  ('date_format', @date_format)                                 = 'iso8601',
+  ('debug_file', @debug_file)                                  = '/var/log/icinga/icinga.debug',
+  ('debug_level', @debug_level)                                 = '0',
+  ('debug_verbosity', @debug_verbosity)                             = '2',
+  ('dump_retained_host_service_states_to_neb', @dump_retained_host_service_states_to_neb)    = '0',
+  ('enable_embedded_perl', @enable_embedded_perl)                        = '1',
+  ('enable_environment_macros', @enable_environment_macros)                   = '1',
+  ('enable_event_handlers', @enable_event_handlers)                       = '1',
+  ('enable_flap_detection', @enable_flap_detection)                       = '1',
+  ('enable_notifications', @enable_notifications)                        = '1',
+  ('enable_predictive_host_dependency_checks', @enable_predictive_host_dependency_checks)    = '1',
+  ('enable_predictive_service_dependency_checks', @enable_predictive_service_dependency_checks) = '1',
+  ('enable_state_based_escalation_ranges', @enable_state_based_escalation_ranges)        = '',
+  ('event_broker_options', @event_broker_options)                        = '-1',
+  ('event_handler_timeout', @event_handler_timeout)                       = '30',
+  ('event_profiling_enabled', @event_profiling_enabled)                     = '0',
+  ('execute_host_checks', @execute_host_checks)                         = '1',
+  ('execute_service_checks', @execute_service_checks)                      = '1',
+  ('external_command_buffer_slots', @external_command_buffer_slots)               = '4096',
+  ('free_child_process_memory', @free_child_process_memory)                   = '',
+  ('global_host_event_handler', @global_host_event_handler)                   = '',
+  ('global_service_event_handler', @global_service_event_handler)                = '',
+  ('high_host_flap_threshold', @high_host_flap_threshold)                    = '20.0',
+  ('high_service_flap_threshold', @high_service_flap_threshold)                 = '20.0',
+  ('host_check_timeout', @host_check_timeout)                          = '30',
+  ('host_freshness_check_interval', @host_freshness_check_interval)               = '60',
+  ('host_inter_check_delay_method', @host_inter_check_delay_method)               = 's',
+  ('host_perfdata_command', @host_perfdata_command)                       = '',
+  ('host_perfdata_file_mode', @host_perfdata_file_mode)                     = 'a',
+  ('host_perfdata_file_processing_command', @host_perfdata_file_processing_command)       = 'process-host-perfdata-file',
+  ('host_perfdata_file_processing_interval', @host_perfdata_file_processing_interval)      = '30',
+  ('host_perfdata_file_template', @host_perfdata_file_template)                 = 'DATATYPE::HOSTPERFDATA\tTIMET::$TIMET$\tHOSTNAME::$HOSTNAME$\tHOSTPERFDATA::$HOSTPERFDATA$\tHOSTCHECKCOMMAND::$HOSTCHECKCOMMAND$\tHOSTSTATE::$HOSTSTATE$\tHOSTSTATETYPE::$HOSTSTATETYPE$',
+  ('host_perfdata_file', @host_perfdata_file)                          = '/var/cache/icinga/perfdata/host-perfdata.out',
+  ('host_perfdata_process_empty_results', @host_perfdata_process_empty_results)         = '',
+  ('icinga_group', @icinga_group)                                = $icinga::server::effective_group,
+  ('icinga_user', @icinga_user)                                 = $icinga::server::effective_owner,
+  ('illegal_macro_output_chars', @illegal_macro_output_chars)                  = '`~$&|"<>',
+  ('illegal_object_name_chars', @illegal_object_name_chars)                   = '`~!$%^&*|"<>?,()=:',
+  ('interval_length', @interval_length)                             = '60',
+  ('keep_unknown_macros', @keep_unknown_macros)                         = '0',
+  ('lock_file', @lock_file)                                   = '/var/run/icinga/icinga.pid',
+  ('log_archive_path', @log_archive_path)                            = '/var/log/icinga/archives',
+  ('log_current_states', @log_current_states)                          = '1',
+  ('log_event_handlers', @log_event_handlers)                          = '1',
+  ('log_external_commands', @log_external_commands)                       = '1',
+  ('log_file', @log_file)                                    = '/var/log/icinga/icinga.log',
+  ('log_host_retries', @log_host_retries)                            = '1',
+  ('log_initial_states', @log_initial_states)                          = '0',
+  ('log_long_plugin_output', @log_long_plugin_output)                      = '0',
+  ('log_notifications', @log_notifications)                           = '1',
+  ('log_passive_checks', @log_passive_checks)                          = '1',
+  ('log_rotation_method', @log_rotation_method)                         = 'd',
+  ('log_service_retries', @log_service_retries)                         = '1',
+  ('low_host_flap_threshold', @low_host_flap_threshold)                     = '5.0',
+  ('low_service_flap_threshold', @low_service_flap_threshold)                  = '5.0',
+  ('max_check_result_file_age', @max_check_result_file_age)                   = '3600',
+  ('max_check_result_list_items', @max_check_result_list_items)                 = '',
+  ('max_check_result_reaper_time', @max_check_result_reaper_time)                = '30',
+  ('max_concurrent_checks', @max_concurrent_checks)                       = '0',
+  ('max_debug_file_size', @max_debug_file_size)                         = '100000000',
+  ('max_host_check_spread', @max_host_check_spread)                       = '30',
+  ('max_service_check_spread', @max_service_check_spread)                    = '30',
+  ('notification_timeout', @notification_timeout)                        = '30',
+  ('object_cache_file', @object_cache_file)                           = '/var/cache/icinga/objects.cache',
+  ('obsess_over_hosts', @obsess_over_hosts)                           = '0',
+  ('obsess_over_services', @obsess_over_services)                        = '0',
+  ('ochp_command', @ochp_command)                                = '',
+  ('ocsp_command', @ocsp_command)                                = '',
+  ('ocsp_timeout', @ocsp_timeout)                                = '5',
+  ('p1_file', @p1_file)                                     = '/usr/lib/icinga/p1.pl',
+  ('passive_host_checks_are_soft', @passive_host_checks_are_soft)                = '0',
+  ('perfdata_timeout', @perfdata_timeout)                            = '5',
+  ('precached_object_file', @precached_object_file)                       = '/var/cache/icinga/objects.precache',
+  ('process_performance_data', @process_performance_data)                    = '1',
+  ('resource_file', @resource_file)                               = '/etc/icinga/resource.cfg',
+  ('retained_contact_host_attribute_mask', @retained_contact_host_attribute_mask)        = '0',
+  ('retained_contact_service_attribute_mask', @retained_contact_service_attribute_mask)     = '0',
+  ('retained_host_attribute_mask', @retained_host_attribute_mask)                = '0',
+  ('retained_process_host_attribute_mask', @retained_process_host_attribute_mask)        = '0',
+  ('retained_process_service_attribute_mask', @retained_process_service_attribute_mask)     = '0',
+  ('retained_service_attribute_mask', @retained_service_attribute_mask)             = '0',
+  ('retain_state_information', @retain_state_information)                    = '1',
+  ('retention_update_interval', @retention_update_interval)                   = '60',
+  ('service_check_timeout', @service_check_timeout)                       = '60',
+  ('service_check_timeout_state', @service_check_timeout_state)                 = 'u',
+  ('service_freshness_check_interval', @service_freshness_check_interval)            = '60',
+  ('service_inter_check_delay_method', @service_inter_check_delay_method)            = 's',
+  ('service_interleave_factor', @service_interleave_factor)                   = 's',
+  ('service_perfdata_command', @service_perfdata_command)                    = '',
+  ('service_perfdata_file_mode', @service_perfdata_file_mode)                  = 'a',
+  ('service_perfdata_file_processing_command', @service_perfdata_file_processing_command)    = 'process-service-perfdata-file',
+  ('service_perfdata_file_processing_interval', @service_perfdata_file_processing_interval)   = '30',
+  ('service_perfdata_file_template', @service_perfdata_file_template)              = 'DATATYPE::SERVICEPERFDATA\tTIMET::$TIMET$\tHOSTNAME::$HOSTNAME$\tSERVICEDESC::$SERVICEDESC$\tSERVICEPERFDATA::$SERVICEPERFDATA$\tSERVICECHECKCOMMAND::$SERVICECHECKCOMMAND$\tHOSTSTATE::$HOSTSTATE$\tHOSTSTATETYPE::$HOSTSTATETYPE$\tSERVICESTATE::$SERVICESTATE$\tSERVICESTATETYPE::$SERVICESTATETYPE$',
+  ('service_perfdata_file', @service_perfdata_file)                       = '/var/cache/icinga/perfdata/service-perfdata.out',
+  ('service_perfdata_process_empty_results', @service_perfdata_process_empty_results)      = '',
+  ('sleep_time', @sleep_time)                                  = '0.25',
+  ('soft_state_dependencies', @soft_state_dependencies)                     = '0',
+  ('stalking_event_handlers_for_hosts', @stalking_event_handlers_for_hosts)           = '0',
+  ('stalking_event_handlers_for_services', @stalking_event_handlers_for_services)        = '0',
+  ('stalking_notifications_for_hosts', @stalking_notifications_for_hosts)            = '0',
+  ('stalking_notifications_for_services', @stalking_notifications_for_services)         = '0',
+  ('state_retention_file', @state_retention_file)                        = '/var/cache/icinga/retention.dat',
+  ('status_file', @status_file)                                 = '/var/lib/icinga/status.dat',
+  ('status_update_interval', @status_update_interval)                      = '10',
+  ('sync_retention_file', @sync_retention_file)                         = '',
+  ('syslog_local_facility', @syslog_local_facility)                       = '5',
+  ('temp_file', @temp_file)                                   = '/var/cache/icinga/icinga.tmp',
+  ('temp_path', @temp_path)                                   = '/tmp',
+  ('time_change_threshold', @time_change_threshold)                       = '',
+  ('translate_passive_host_checks', @translate_passive_host_checks)               = '0',
+  ('use_aggressive_host_checking', @use_aggressive_host_checking)                = '0',
+  ('use_daemon_log', @use_daemon_log)                              = '1',
+  ('use_embedded_perl_implicitly', @use_embedded_perl_implicitly)                = '1',
+  ('use_large_installation_tweaks', @use_large_installation_tweaks)               = '0',
+  ('use_regexp_matching', @use_regexp_matching)                         = '0',
+  ('use_retained_program_state', @use_retained_program_state)                  = '1',
+  ('use_retained_scheduling_info', @use_retained_scheduling_info)                = '1',
+  ('use_syslog', @use_syslog)                                  = '1',
+  ('use_syslog_local_facility', @use_syslog_local_facility)                   = '0',
+  ('use_timezone', @use_timezone)                                = '',
+  ('use_true_regexp_matching', @use_true_regexp_matching)                    = '0',
+
+
+
+  not_blank('buffer_file',                            @buffer_file)
+  is_an_integer('config_output_options',              @config_output_options)
+  one_of('config_output_options',                     @config_output_options, ['0','1','2','3'], '[0-9]')
+  is_an_integer('data_processing_options',            @data_processing_options)
+  not_blank('debug_file__ido2db',                     @debug_file__ido2db)
+  not_blank('debug_file__idomod',                     @debug_file__idomod)
+  is_an_integer('debug_level',                        @debug_level)
+  one_of('debug_level',                               @debug_level, ['-1','0','1','2'], '[-]?[0-9]')
+  is_an_integer('debug_readable_timestamp',           @debug_readable_timestamp)
+  zero_or_one('debug_readable_timestamp',             @debug_readable_timestamp)
+  is_an_integer('debug_verbosity',                    @debug_verbosity)
+  one_of('debug_verbosity',                           @debug_verbosity, ['0','1','2'], '[0-9]')
+  zero_or_one('dump_customvar_status',                @dump_customvar_status)
+  is_an_integer('housekeeping_thread_startup_delay',  @housekeeping_thread_startup_delay)
+  not_blank('instance_name',                          @instance_name)
+  not_blank('lock_file',                              @lock_file)
+  is_an_integer('max_acknowledgements_age',           @max_acknowledgements_age)
+  is_an_integer('max_contactnotificationmethods_age', @max_contactnotificationmethods_age)
+  is_an_integer('max_contactnotifications_age',       @max_contactnotifications_age)
+  is_an_integer('max_debug_file_size',                @max_debug_file_size)
+  is_an_integer('max_downtimehistory_age',            @max_downtimehistory_age)
+  is_an_integer('max_externalcommands_age',           @max_externalcommands_age)
+  is_an_integer('max_eventhandlers_age',              @max_eventhandlers_age)
+  is_an_integer('max_hostchecks_age',                 @max_hostchecks_age)
+  is_an_integer('max_logentries_age',                 @max_logentries_age)
+  is_an_integer('max_notifications_age',              @max_notifications_age)
+  is_an_integer('max_servicechecks_age',              @max_servicechecks_age)
+  is_an_integer('max_systemcommands_age',             @max_systemcommands_age)
+  zero_or_one('oci_errors_to_syslog',                 @oci_errors_to_syslog)
+  is_an_integer('oracle_trace_level',                 @oracle_trace_level)
+  one_of('oracle_trace_level',                        @oracle_trace_level, ['0','1','4','8','12'], '[0-9]{1,2}')
+  is_an_integer('output_buffer_items',                @output_buffer_items)
+  not_blank('output_type',                            @output_type)
+  not_blank('output',                                 @output)
+  is_an_integer('reconnect_interval',                 @reconnect_interval)
+  is_an_integer('reconnect_warning_interval',         @reconnect_warning_interval)
+  not_blank('socket_name',                            @socket_name)
+  not_blank('socket_perm',                            @socket_perm)
+  not_blank('socket_type',                            @socket_type)
+  is_an_integer('tcp_port',                           @tcp_port)
+  is_an_integer('trim_db_interval',                   @trim_db_interval)
+  zero_or_one('use_ssl',                              @use_ssl)
+
+-%>

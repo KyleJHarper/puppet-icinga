@@ -9,11 +9,12 @@
 class icinga::client::params () {
 
   # Patterns for allowed values when processing ensurable attributes.
-  $ensure_file_pattern         = 'file|present|absent'
-  $ensure_directory_pattern    = 'directory|absent'
-  $ensure_package_pattern      = 'present|installed|latest|absent|purged|([0-9]+(\.[0-9]+)*)'
-  $ensure_service_pattern      = 'stopped|running'
-  $ensure_nagios_pattern       = 'present|absent'
+  $ensure_file_pattern      = 'file|present|absent'
+  $ensure_directory_pattern = 'directory|absent'
+  $ensure_package_pattern   = 'present|installed|latest|absent|purged|([0-9]+(\.[0-9]+)*)'
+  $ensure_role_pattern      = '(present|absent)'
+  $ensure_service_pattern   = 'stopped|running'
+  $ensure_nagios_pattern    = 'present|absent'
 
   # Information from the server component, which is otherwise inaccessible for client-only manifests.  Mostly for validation purposes.
   $known_servicegroups = hiera_hash('icinga::server::servicegroups')

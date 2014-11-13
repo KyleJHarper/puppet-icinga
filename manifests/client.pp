@@ -15,6 +15,7 @@ class icinga::client (
   $ensure_directory                = 'directory',
   $ensure_package                  = 'installed',
   $ensure_service                  = 'running',
+  $ensure_role                     = 'present',
   $ensure_nagios_host              = 'present',
   $ensure_nagios_service           = 'present',
   $effective_owner                 = 'nagios',
@@ -41,7 +42,7 @@ class icinga::client (
   $known_hostgroups    = hiera_hash('icinga::server::hostgroups')
 
   # Sanity checks for failsauce.  Template compilation failure will result in a fail() call for us.
-  $failsauce = template('icinga/failsauce.erb')
+  $failsauce = template('icinga/failsauce_client_ensures.erb')
   validate_hash($defined_checks, $known_servicegroups, $known_hostgroups)
   validate_array($defined_hostgroups)
 
