@@ -47,7 +47,9 @@ function install_dbs {
   if ! is_installed "${ICINGA_DB_NAME}" ; then
     echo "Core Icinga database '${ICINGA_DB_NAME}' missing.  Attempting to install."
     case "${DB_TYPE}" in
-      'postgres' ) createlang -p "${DB_PORT}" -U "${DB_USERNAME}" -h "${DB_HOST}" plpgsql            "${ICINGA_DB_NAME}"                       || return 1
+      'postgres' ) sed -i -r '/\\set/d' "${pgsql_core_file}"
+                   sed -i -r '/ALTER[ ]+(TABLE|SEQUENCE)[ ]+[^ ]+[ ]+OWNER[ ]+TO/d' "${pgsql_core_file}"
+                   createlang -p "${DB_PORT}" -U "${DB_USERNAME}" -h "${DB_HOST}" plpgsql            "${ICINGA_DB_NAME}"                       || return 1
                    psql       -p "${DB_PORT}" -U "${DB_USERNAME}" -h "${DB_HOST}" -v ON_ERROR_STOP=1 "${ICINGA_DB_NAME}" <"${pgsql_core_file}" || return 1 ;;
       'mysql'    ) mysql      -P "${DB_PORT}" -u "${DB_USERNAME}" -h "${DB_HOST}" -p${DB_PASSWORD}   "${ICINGA_DB_NAME}" <"${mysql_core_file}" || return 1 ;;
       *          ) echo "The DB type must be 'postgres' or 'mysql', not '${DB_TYPE}'." >&2                                                      ; exit 1   ;;
@@ -57,7 +59,9 @@ function install_dbs {
   if ! is_installed "${ICINGA_WEB_DB_NAME}" ; then
     echo "Icinga web database '${ICINGA_WEB_DB_NAME}' missing.  Attempting to install."
     case "${DB_TYPE}" in
-      'postgres' ) createlang -p "${DB_PORT}" -U "${DB_USERNAME}" -h "${DB_HOST}" plpgsql            "${ICINGA_WEB_DB_NAME}"                      || return 1
+      'postgres' ) sed -i -r '/\\set/d' "${pgsql_web_file}"
+                   sed -i -r '/ALTER[ ]+(TABLE|SEQUENCE)[ ]+[^ ]+[ ]+OWNER[ ]+TO/d' "${pgsql_web_file}"
+                   createlang -p "${DB_PORT}" -U "${DB_USERNAME}" -h "${DB_HOST}" plpgsql            "${ICINGA_WEB_DB_NAME}"                      || return 1
                    psql       -p "${DB_PORT}" -U "${DB_USERNAME}" -h "${DB_HOST}" -v ON_ERROR_STOP=1 "${ICINGA_WEB_DB_NAME}" <"${pgsql_web_file}" || return 1 ;;
       'mysql'    ) mysql      -P "${DB_PORT}" -u "${DB_USERNAME}" -h "${DB_HOST}" -p${DB_PASSWORD}   "${ICINGA_WEB_DB_NAME}" <"${mysql_web_file}" || return 1 ;;
       *          ) echo "The DB type must be 'postgres' or 'mysql', not '${DB_TYPE}'." >&2                                                         ; exit 1   ;;

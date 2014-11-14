@@ -1,11 +1,15 @@
 <%
+  #
+  # The following definitions help with validation.
+  #
+  # Note: when the value passed is '' it will be commented out in the config, so we leave.
   def zero_or_one(attribute, value)
-    return if value.nil? or value == :undef
+    return if value == ''
     value =~ /[01]/ or fail("The attribute '#{attribute}' must be 0 or 1, not '#{value}'.")
   end
 
   def one_of(attribute, value, allowed, pattern = '[a-z](,[a-z])*')
-    return if value.nil? or value == :undef
+    return if value == ''
     value =~ /#{pattern}/ or fail("The attribute '#{attribute}' must be a csv matching pattern '#{pattern}', not '#{value}'.")
     value.split(',').each do |token|
       allowed.include?(token) or fail("The attribute '#{attribute}' does not allow the token '#{token}' found in value '#{value}'.")
@@ -16,19 +20,19 @@
   end
 
   def is_a_float(attribute, value)
-    return if value.nil? or value == :undef
-    value !~ /^(([0-9]+([.][0-9]+)?)|([.][0-9]+))$/ or fail("The attribute '#{attribute}' must be an integer or float, not '#{value}'.")
+    return if value == ''
+    value =~ /^(([0-9]+([.][0-9]+)?)|([.][0-9]+))$/ or fail("The attribute '#{attribute}' must be an integer or float, not '#{value}'.")
   end
 
   def is_an_integer(attribute, value)
-    return if value.nil? or value == :undef
-    if value != :undef and value !~ /^[0-9]+$/ ; then
+    return if value == ''
+    if value != :undef and value !~ /^[-]?[0-9]+$/ ; then
       fail("The attribute '#{attribute}' must be an integer, not '#{value}'.")
     end
   end
 
   def not_blank(attribute, value)
-    if value.nil? then
+    if value.nil? or value == '' then
       fail("The attribute '#{attribute}' cannot be blank, nil, or undef.")
     end
   end

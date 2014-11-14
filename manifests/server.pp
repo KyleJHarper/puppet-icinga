@@ -51,7 +51,7 @@ class icinga::server (
   class{'icinga::server::package_provider': }->
   class{'icinga::server::packages': }->
   class{'icinga::server::ido_config': }->
-  class{'icinga::server::config': }
+  class{'icinga::server::config': }->
 #  class{'icinga::server::ingraph': }
   class{'icinga::server::services': }
 
