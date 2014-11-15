@@ -34,7 +34,7 @@ class icinga::server (
   $db_type                    = 'postgres',
   $db_port                    = '5432',
 
-) inherits icinga::server::params {
+) inherits ::icinga::server::params {
 
   # The following has to be done outside param.pp pattern, and outside data bindings above because we NEED hiera_hash.
   $servicegroups = hiera_hash('icinga::server::servicegroups')
@@ -46,7 +46,7 @@ class icinga::server (
 
   # Chain dependencies here
   Class['server']->
-  class{'apache': purge_configs => false }->
+  class{'apache': purge_configs => false, manage_user => false, manage_group => false, }->
   class{'icinga::server::roles': }->
   class{'icinga::server::package_provider': }->
   class{'icinga::server::packages': }->

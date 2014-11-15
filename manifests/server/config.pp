@@ -162,8 +162,8 @@ class icinga::server::config (
 
 ){
 
-  $failsauce_icinga = template('icinga/failsauce_icinga.erb')
-
+  $failsauce_icinga     = template('icinga/failsauce_icinga.erb')
+  $command_file_dirname = inline_template('<%= File.dirname(@command_file) %>')
   File {
     owner => $icinga::server::effective_owner,
     group => $icinga::server::effective_group,
@@ -202,6 +202,9 @@ class icinga::server::config (
 #    mode    => '0644',
 #    source  => 'puppet:///modules/icinga/etc/icinga/objects';
 
+    $command_file_dirname:
+    ensure => $icinga::server::ensure_directory,
+    mode   => '0770';
   }
 
   exec {

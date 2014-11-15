@@ -33,7 +33,7 @@ class icinga::client (
   $use_sudo                        = $icinga::client::params::use_sudo,
   $default_hostgroups              = $icinga::client::params::default_hostgroups,
   $objects_directory               = $icinga::client::params::objects_directory,
-) inherits icinga::client::params {
+) inherits ::icinga::client::params {
 
   # The following has to be done outside param.pp pattern, and outside data bindings above because we NEED hiera_hash.
   $defined_checks      = hiera_hash('icinga::client::defined_checks', {})

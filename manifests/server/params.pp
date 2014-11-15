@@ -33,10 +33,7 @@ class icinga::server::params () {
       $ingraph_collector_service = 'ingraph-collector'
     }
     default: {
-      notify{
-        'Fallback':
-        message => "Your operating system '${::operatingsystem}' is not supported.";
-      }
+      fail("Your operating system '${::operatingsystem}' is not supported.")
     }
   }
 }
